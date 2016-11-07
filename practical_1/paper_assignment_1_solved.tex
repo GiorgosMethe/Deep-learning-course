@@ -28,8 +28,7 @@ Similarly,
 =&  (y_{out} - y_{gt}) \cfrac{\partial f_3 (s_{out})}{\partial W_{out}} \cfrac{\partial \mathcal{L}}{\partial W_2} \left( f_2(w_2 f_1 (w_1 x_{in}))) \right)\\
 &= (y_{out} - y_{gt}) \cfrac{\partial f_3 (s_{out})}{\partial W_{out}} \cfrac{\partial f_2 (s_2)}{\partial W_2} z_1.
 \end{align*}
-And,
-Similarly,
+And similarly,
 \begin{align*}
 \cfrac{\partial \mathcal{L}}{\partial W_1} =& (y_{out} - y_{gt})  \cfrac{\partial \mathcal{L}}{\partial W_1} \left( f_3 ( W_{out} f_2(w_2 f_1 (w_1 x_{in})) \right), \text{by the chain rule}\\
 &= (y_{out} - y_{gt}) \cfrac{\partial f_3 (s_{out})}{\partial W_{out}} \cfrac{\partial f_2 (s_2)}{\partial W_2} \cfrac{\partial \mathcal{L}}{\partial W_1} \left(f_1 (w_1 x_{in})) \right)\\
@@ -80,7 +79,7 @@ Delta_W = - theta * delta_i * _x.reshape((2,1)) # derivative at weights W
 w = w + Delta_w # new w
 W = W + Delta_W # new W
 \end{verbatim}
-Here I present the results for all iterations and all samples:
+Here we present the results for all iterations and all samples:
 \begin{multicols}{3}
 \begin{tiny}
 \begin{verbatim}
@@ -309,9 +308,17 @@ We assume $p_{y_i} < margin$,
 \cfrac{\partial \mathcal{L}_{hinge}}{\partial o_j} =& \cfrac{\partial}{\partial o_j} \left(   p_j - p_{y_i} + margin) \right)\\
 =& \cfrac{\partial}{\partial o_j} p_j\\
 =& \cfrac{\partial}{\partial o_j} \left( \cfrac{\exp(o_j)}{\sum_k \exp(o_k)} \right)\\
-=& \cfrac{1}{\sum_k \exp(o_k) }\cfrac{\partial}{\partial o_j} \exp(o_j)\\
-=& \cfrac{1}{\sum_k \exp(o_k) } \cfrac{1}{o_j}\\
+=& \cfrac{\partial}{\partial o_j} \left( \cfrac{\exp(o_j)}{exp(o_j) + \sum_{k \neq j } \exp(o_k)} \right)\\
+=& (\exp(o_j))' \left( \exp(o_j) + \sum_{k \neq j } \exp(o_k) \right) - \exp(o_j) \left( \exp(o_j) + \sum_{k \neq j } \exp(o_k) \right) '\\
+=& \exp(o_j) \left( \exp(o_j) + \sum_{k \neq j } \exp(o_k) \right) - \exp(2o_j)\\
+=& \exp(2o_j) + \exp(o_j) \sum_{k \neq j } \exp(o_k) - \exp(2o_j)\\
+=& \exp(o_j) \sum_{k \neq j } \exp(o_k),
 \end{align*}
+which is the derivative of the loss function $\mathcal{L}_{hinge}$ with respect to $o_j$.
+
+
+
+\section*{Exercise-4}
 
 
 \end{document}
