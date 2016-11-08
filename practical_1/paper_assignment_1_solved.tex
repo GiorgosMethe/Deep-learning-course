@@ -296,23 +296,23 @@ Here we present the results for all iterations and all samples:
 \section*{Exercise-3}
 \subsection*{i)}
 Since $\max(0, p_j - p_{y_i} + margin)$ is minimized when $p_j - p_{y_i} = - margin$ which results $p_j = p_{y_i} - margin$, the loss function is trying to maximize the difference of the probability output for the class $p_{y_i}$ with regards to every other class $j$ by the value of $margin$.
-In simple words, $\mathcal{L}_{hinge}$ is trying to maximize the difference between probability outputs of different classes.
+In simple words, $\mathcal{L}_{hinge}$ is trying to maximize the difference between the correct all other classes.
 
 \subsection*{ii)}
 \begin{align*}
 \cfrac{\partial \mathcal{L}_{hinge}}{\partial o_j} = \cfrac{\partial}{\partial o_j} \left(   \max(0, p_j - p_{y_i} + margin) \right)
 \end{align*}
-For $p_{y_i} > margin$, $\cfrac{\partial \mathcal{L}_{hinge}}{\partial o_j} = 0$, while for $p_{y_i} = margin$, $p_{y_i} > margin$, $\cfrac{\partial \mathcal{L}_{hinge}}{\partial o_j} = \varnothing$.
-We assume $p_{y_i} < margin$,
+For $p_{y_i} > p_j + margin$, $\cfrac{\partial \mathcal{L}_{hinge}}{\partial o_j} = 0$, while for $p_{y_i} = p_j + margin$, $\cfrac{\partial \mathcal{L}_{hinge}}{\partial o_j} = \varnothing$.
+We assume $p_{y_i} < p_j + margin$,
 \begin{align*}
 \cfrac{\partial \mathcal{L}_{hinge}}{\partial o_j} =& \cfrac{\partial}{\partial o_j} \left(   p_j - p_{y_i} + margin) \right)\\
 =& \cfrac{\partial}{\partial o_j} p_j\\
 =& \cfrac{\partial}{\partial o_j} \left( \cfrac{\exp(o_j)}{\sum_k \exp(o_k)} \right)\\
-=& \cfrac{\partial}{\partial o_j} \left( \cfrac{\exp(o_j)}{exp(o_j) + \sum_{k \neq j } \exp(o_k)} \right)\\
-=& (\exp(o_j))' \left( \exp(o_j) + \sum_{k \neq j } \exp(o_k) \right) - \exp(o_j) \left( \exp(o_j) + \sum_{k \neq j } \exp(o_k) \right) '\\
-=& \exp(o_j) \left( \exp(o_j) + \sum_{k \neq j } \exp(o_k) \right) - \exp(2o_j)\\
-=& \exp(2o_j) + \exp(o_j) \sum_{k \neq j } \exp(o_k) - \exp(2o_j)\\
-=& \exp(o_j) \sum_{k \neq j } \exp(o_k),
+=& \cfrac{\partial}{\partial o_j} \left( \exp(o_j) \cfrac{1}{\sum_k \exp(o_k)} \right)\\
+=& (\exp(o_j))' \cfrac{1}{\sum_k \exp(o_k)} + \exp(o_j) \left( \cfrac{1}{\sum_k \exp(o_k)} \right)'  \\
+=& \exp(o_j) \cfrac{1}{\sum_k \exp(o_k)} - \exp(o_j) \left( \cfrac{1}{\sum_k \exp(o_k)} \right)^2 \left( \sum_k \exp(o_j) \right)'  \\
+=& \exp(o_j) \cfrac{1}{\sum_k \exp(o_k)} - \exp(2o_j) \left( \cfrac{1}{\sum_k \exp(o_k)} \right)^2\\
+=& p_j - p_j^2
 \end{align*}
 which is the derivative of the loss function $\mathcal{L}_{hinge}$ with respect to $o_j$.
 
