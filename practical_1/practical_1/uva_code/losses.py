@@ -74,6 +74,7 @@ def SoftMaxLoss(x, y):
   # Compute softmax loss on input x and y and store it in loss variable. Compute gradient#
   # of the loss with respect to the input and store it in dx variable.                   #
   ########################################################################################
+  print x.shape, y.shape
   dx = None
   loss = None
   ########################################################################################

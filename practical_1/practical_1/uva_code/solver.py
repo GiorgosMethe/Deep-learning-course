@@ -1,4 +1,6 @@
 import copy
+import numpy as np
+
 """
 This module implements Solver that optimize model parameters using provided optimizer.
 You should fill in code into indicated sections.
@@ -52,8 +54,13 @@ class Solver(object):
     # Compute gradient of the loss on the batch with the respect to model parameters.      #
     # Compute gradient of the loss with respect to parameters of the model.                #
     ########################################################################################
-    out = None
-    loss = None
+    print "I am here"
+    Input_next = x_batch
+    for i in range(len(self.model.layers)):
+      Input_next = self.model.layers[i].forward(Input_next)
+    out = Input_next
+    loss = self.model.loss_func(out, y_batch)
+
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -136,8 +143,9 @@ class Solver(object):
       # Sample a random mini-batch with size of batch_size from train set. Put images to     #
       # x_train_batch and labels to y_train_batch.                                           #
       ########################################################################################
-      x_train_batch = None
-      y_train_batch = None
+      samples = np.random.choice(x_train.shape[0], size=batch_size, replace=False)
+      X_train_batch = x_train[samples]
+      Y_train_batch = y_train[samples]
       ########################################################################################
       #                              END OF YOUR CODE                                        #
       ########################################################################################
@@ -148,6 +156,7 @@ class Solver(object):
       # Train on batch (x_train_batch, y_train_batch) using train_on_batch method. Compute   #
       # train loss and accuracy on this batch.                                               #
       ########################################################################################
+      self.train_on_batch(X_train_batch, Y_train_batch)
       train_loss = None
       train_acc = None
       ########################################################################################
@@ -167,7 +176,8 @@ class Solver(object):
           ########################################################################################
           # TODO:                                                                                #
           # Compute the loss and accuracy on the validation set.                                 #
-          ########################################################################################
+          ########################################################################################s
+          self.test_on_batch(x_val, y_val)
           val_loss = None
           val_acc = None
           ########################################################################################

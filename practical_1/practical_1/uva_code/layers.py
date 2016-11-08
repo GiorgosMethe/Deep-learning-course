@@ -1,3 +1,4 @@
+import numpy as np
 """
 This module implements various layers for the network.
 You should fill in code into indicated sections.
@@ -115,8 +116,8 @@ class LinearLayer(Layer):
     #                                                                                      #
     # Initialize biases self.params['b'] with 0.                                           #
     ########################################################################################
-    self.params['w'] = np.random.normal(loc=0.0, scale=self.layer_params['weight_scale'], size = self.layer_params['input_size'])
-    self.params['b'] = np.zeros(self.layer_params['input_size'])
+    self.params['w'] = np.random.normal(loc=0.0, scale=self.layer_params['weight_scale'], size = (self.layer_params['input_size'], self.layer_params['output_size']))
+    self.params['b'] = np.zeros(self.layer_params['output_size'])
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -161,8 +162,8 @@ class LinearLayer(Layer):
     # Hint: You can store intermediate variables in self.cache which can be used in        #
     # backward pass computation.                                                           #
     ########################################################################################
-    out = np.dot(x, self.params['w']) + self.params['b']
-
+    out = (np.dot(x, self.params['w']) + self.params['b'])
+    print out.shape
     # Cache if in train mode
     if self.train_mode:
       self.cache = out
@@ -195,7 +196,7 @@ class LinearLayer(Layer):
     # Hint: Use self.cache from forward pass.                                              #
     ########################################################################################
     dx = self.params['w'] * dout
-    self.grads['w'] = None
+    self.grads['w'] = dout
     self.grads['b'] = np.sum(dout)
     ########################################################################################
     #                              END OF YOUR CODE                                        #
@@ -477,11 +478,12 @@ class SoftMaxLayer(Layer):
     # Hint: You can store intermediate variables in self.cache which can be used in        #
     # backward pass computation.                                                           #
     ########################################################################################
-    out = None
-
+    exp = np.exp(x.T)
+    out = exp.T / np.sum(exp, axis=1)
+    print out.shape
     # Cache if in train mode
     if self.train_mode:
-      self.cache = None
+      self.cache = exp
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -506,7 +508,7 @@ class SoftMaxLayer(Layer):
     #                                                                                      #
     # Hint: Use self.cache from forward pass.                                              #
     ########################################################################################s
-    dx = None
+    dx = self.cache - self.cache**2
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
