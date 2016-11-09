@@ -54,8 +54,9 @@ class Solver(object):
     # Compute gradient of the loss with respect to parameters of the model.                #
     ########################################################################################
     out = self.model.forward(x_batch)
-    loss, dout = self.model.loss_func(out, y_batch)
-    self.model.backward(dout)    ########################################################################################
+    loss, dout = self.model.loss(out, y_batch)
+    self.model.backward(dout)
+    ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
 
@@ -203,7 +204,7 @@ class Solver(object):
     # TODO:                                                                                #
     # Compute the accuracy on output of the network. Store it in accuracy variable.        #
     ########################################################################################
-    accuracy = self.score(out,y)
+    accuracy = None
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -225,7 +226,7 @@ class Solver(object):
     # Compute the prediction on data x. Store it in y_pred variable.                       #
     #                                                                                      #
     ########################################################################################
-    y_pred = np.argmax(self.model.forward(x))
+    y_pred = self.model.forward(x)
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################

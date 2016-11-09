@@ -75,12 +75,12 @@ def SoftMaxLoss(x, y):
   # Compute softmax loss on input x and y and store it in loss variable. Compute gradient#
   # of the loss with respect to the input and store it in dx variable.                   #
   ########################################################################################
-  x = np.exp(x.T)
-  x = x.T / np.sum(x, axis=1)
-  a = np.zeros((x.shape[0], x.shape[1]))
-  for idx, label in enumerate(y): a[idx, label] = 1.0
-  loss = - (np.log(np.sum(x * a)))
-  dx = - (x * (a - x))
+  exp_nor = np.exp(x) / np.sum(np.exp(x), axis=1, keepdims=True)
+  loss = -np.sum(np.log(exp_nor[range(y.shape[0]), y])) / y.shape[0]
+
+  dx = exp_nor
+  dx[range(y.shape[0]), y] -= 1
+  dx /= y.shape[0]
   # print "Error SoftMaxLoss", loss, dx.shape
   ########################################################################################
   #                              END OF YOUR CODE                                        #

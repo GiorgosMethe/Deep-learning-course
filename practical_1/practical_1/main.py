@@ -93,7 +93,7 @@ solver.fit(X_train, Y_train, optimizer, optimizer_config,
 # TODO:                                                                                #
 # Compute the accuracy on the test set.                                                #
 ########################################################################################
-test_acc = solver.score(solver.predict(X_test), Y_test.T)
+test_acc = solver.score(solver.predict(X_test), Y_test)
 ########################################################################################
 #                              END OF YOUR CODE                                        #
 ########################################################################################
