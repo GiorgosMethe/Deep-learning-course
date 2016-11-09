@@ -47,21 +47,15 @@ class Solver(object):
 
     Returns:
       loss: Loss of the model.
-
     """
     ########################################################################################
     # TODO:                                                                                #
     # Compute gradient of the loss on the batch with the respect to model parameters.      #
     # Compute gradient of the loss with respect to parameters of the model.                #
     ########################################################################################
-    print "I am here"
-    Input_next = x_batch
-    for i in range(len(self.model.layers)):
-      Input_next = self.model.layers[i].forward(Input_next)
-    out = Input_next
-    loss = self.model.loss_func(out, y_batch)
-
-    ########################################################################################
+    out = self.model.forward(x_batch)
+    loss, dout = self.model.loss_func(out, y_batch)
+    self.model.backward(dout)    ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
 
@@ -96,8 +90,8 @@ class Solver(object):
     # TODO:                                                                                #
     # Compute output and loss for x_batch and y_batch.                                     #
     ########################################################################################
-    out = None
-    loss = None
+    out = self.model.forward(x_batch)
+    loss, dout = self.model.loss_func(out, y_batch)
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -156,9 +150,8 @@ class Solver(object):
       # Train on batch (x_train_batch, y_train_batch) using train_on_batch method. Compute   #
       # train loss and accuracy on this batch.                                               #
       ########################################################################################
-      self.train_on_batch(X_train_batch, Y_train_batch)
-      train_loss = None
-      train_acc = None
+      out, train_loss = self.train_on_batch(X_train_batch, Y_train_batch)
+      train_acc = self.score(out, Y_train_batch)
       ########################################################################################
       #                              END OF YOUR CODE                                        #
       ########################################################################################
@@ -177,9 +170,9 @@ class Solver(object):
           # TODO:                                                                                #
           # Compute the loss and accuracy on the validation set.                                 #
           ########################################################################################s
-          self.test_on_batch(x_val, y_val)
-          val_loss = None
-          val_acc = None
+          out, val_loss = self.test_on_batch(x_val, y_val)
+          val_acc = self.score(out, y_val)
+
           ########################################################################################
           #                              END OF YOUR CODE                                        #
           ######################################################################################
@@ -210,7 +203,7 @@ class Solver(object):
     # TODO:                                                                                #
     # Compute the accuracy on output of the network. Store it in accuracy variable.        #
     ########################################################################################
-    accuracy = None
+    accuracy = self.score(out,y)
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -232,7 +225,7 @@ class Solver(object):
     # Compute the prediction on data x. Store it in y_pred variable.                       #
     #                                                                                      #
     ########################################################################################
-    y_pred = None
+    y_pred = np.argmax(self.model.forward(x))
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -255,7 +248,7 @@ class Solver(object):
     # TODO:                                                                                #
     # Compute the accuracy on data x with labels y. Store it in score variable.            #
     ########################################################################################
-    score = None
+    score = float(sum(np.argmax(x, axis=1) == y)) / len(y)
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################

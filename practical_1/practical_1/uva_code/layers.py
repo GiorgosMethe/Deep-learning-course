@@ -116,7 +116,9 @@ class LinearLayer(Layer):
     #                                                                                      #
     # Initialize biases self.params['b'] with 0.                                           #
     ########################################################################################
-    self.params['w'] = np.random.normal(loc=0.0, scale=self.layer_params['weight_scale'], size = (self.layer_params['input_size'], self.layer_params['output_size']))
+    self.params['w'] = np.random.normal(loc=0.0, scale=self.layer_params['weight_scale'],
+                                        size = (self.layer_params['input_size'],
+                                                self.layer_params['output_size']))
     self.params['b'] = np.zeros(self.layer_params['output_size'])
     ########################################################################################
     #                              END OF YOUR CODE                                        #
@@ -138,7 +140,7 @@ class LinearLayer(Layer):
     # Compute the loss of the layer which responsible for L2 regularization term. Store it #
     # in loss variable.                                                                    #
     ########################################################################################
-    loss = None
+    loss = .5 * self.layer_params['weight_decay'] * np.sum(self.params['w']**2)
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -163,10 +165,10 @@ class LinearLayer(Layer):
     # backward pass computation.                                                           #
     ########################################################################################
     out = (np.dot(x, self.params['w']) + self.params['b'])
-    print out.shape
+    # print "forward propagation from linear layer:", out.shape
     # Cache if in train mode
     if self.train_mode:
-      self.cache = out
+      self.cache = x.T
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -195,9 +197,11 @@ class LinearLayer(Layer):
     #                                                                                      #
     # Hint: Use self.cache from forward pass.                                              #
     ########################################################################################
-    dx = self.params['w'] * dout
-    self.grads['w'] = dout
+    dx = np.dot(self.params['w'], dout.T)
+    # print "Backward propagation Linear layer",
+    self.grads['w'] = np.dot(self.cache, dout)
     self.grads['b'] = np.sum(dout)
+    # print dx.shape, self.grads['w'].shape, self.grads['b'].shape
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -478,12 +482,13 @@ class SoftMaxLayer(Layer):
     # Hint: You can store intermediate variables in self.cache which can be used in        #
     # backward pass computation.                                                           #
     ########################################################################################
-    exp = np.exp(x.T)
-    out = exp.T / np.sum(exp, axis=1)
-    print out.shape
+    out = None
+    # exp = np.exp(x.T)
+    # out = exp.T / np.sum(exp, axis=1)
+    # print "forward propagation from softmax layer:", out.shape
     # Cache if in train mode
     if self.train_mode:
-      self.cache = exp
+      self.cache = None
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -507,9 +512,11 @@ class SoftMaxLayer(Layer):
     # the input in dx variable.                                                            #
     #                                                                                      #
     # Hint: Use self.cache from forward pass.                                              #
-    ########################################################################################s
-    dx = self.cache - self.cache**2
     ########################################################################################
+    # dx = (self.cache - self.cache**2).T
+    # print "Backward propagation SoftMax layer", dx.shape
+    dx = None
+  ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
 

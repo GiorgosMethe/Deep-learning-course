@@ -75,8 +75,9 @@ class Network(object):
     # TODO:                                                                                #
     # Implement forward pass for the network. Store output of the network in out variable. #
     ########################################################################################
-    out = None
-    ########################################################################################
+    out = x
+    for layer in self.layers:
+      out = layer.forward(out)    ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
 
@@ -94,7 +95,8 @@ class Network(object):
     # TODO:                                                                                #
     # Implement backward pass for the network.                                             #
     ########################################################################################
-
+    for layer in reversed(self.layers):
+      dout = layer.backward(dout)
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################
@@ -120,8 +122,9 @@ class Network(object):
     # Compute loss and gradient of the loss with the respect to out. Store them in loss    #
     # and dout variables respectively.                                                     #
     ########################################################################################
-    loss = None
-    dout = None
+    loss, dout = self.loss_func(out, y)
+    for layer in self.layers:
+      loss += layer.layer_loss()
     ########################################################################################
     #                              END OF YOUR CODE                                        #
     ########################################################################################

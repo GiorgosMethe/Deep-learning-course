@@ -1,3 +1,4 @@
+import numpy as np
 """
 This module implements various losses for the network.
 You should fill in code into indicated sections.
@@ -74,11 +75,14 @@ def SoftMaxLoss(x, y):
   # Compute softmax loss on input x and y and store it in loss variable. Compute gradient#
   # of the loss with respect to the input and store it in dx variable.                   #
   ########################################################################################
-  print x.shape, y.shape
-  dx = None
-  loss = None
+  x = np.exp(x.T)
+  x = x.T / np.sum(x, axis=1)
+  a = np.zeros((x.shape[0], x.shape[1]))
+  for idx, label in enumerate(y): a[idx, label] = 1.0
+  loss = - (np.log(np.sum(x * a)))
+  dx = - (x * (a - x))
+  # print "Error SoftMaxLoss", loss, dx.shape
   ########################################################################################
   #                              END OF YOUR CODE                                        #
   ########################################################################################
-
   return loss, dx

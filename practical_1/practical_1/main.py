@@ -76,12 +76,15 @@ weight_scale = 0.0001
 ########################################################################################
 model = Network()
 model.add_layer(LinearLayer(layer_params = {'input_size': X_train.shape[1], 'output_size':num_classes, 'weight_decay': weight_decay, 'weight_scale':weight_scale}))
-model.add_layer(SoftMaxLayer(layer_params = {'input_size': num_classes, 'output_size':num_classes, 'weight_decay': weight_decay, 'weight_scale':weight_scale}))
 model.add_loss(SoftMaxLoss)
 optimizer = SGD()
-optimizer_config = None
+optimizer_config = {'learning_rate': learning_rate}
 solver = Solver(model)
-solver.fit(X_train, Y_train, optimizer, optimizer_config, X_val, Y_val, batch_size, num_iterations, val_iteration, verbose=True)
+solver.fit(X_train, Y_train, optimizer, optimizer_config,
+           x_val=X_val, y_val=Y_val, batch_size=batch_size,
+           num_iterations=num_iterations,
+           val_iteration=val_iteration,
+           verbose=True)
 ########################################################################################
 #                              END OF YOUR CODE                                        #
 ########################################################################################
@@ -90,7 +93,7 @@ solver.fit(X_train, Y_train, optimizer, optimizer_config, X_val, Y_val, batch_si
 # TODO:                                                                                #
 # Compute the accuracy on the test set.                                                #
 ########################################################################################
-test_acc = None
+test_acc = solver.score(solver.predict(X_test), Y_test.T)
 ########################################################################################
 #                              END OF YOUR CODE                                        #
 ########################################################################################
