@@ -91,17 +91,16 @@ class MLP(object):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-    with tf.variable_scope('hidden'):
-      W = tf.get_variable("weights", shape=[3072, self.n_hidden[0]], initializer=self.weight_initializer, regularizer=self.weight_regularizer)
+    with tf.variable_scope('hidden', reuse=None):
+      W = tf.get_variable("weights", shape=[x.get_shape()[1], self.n_hidden[0]], initializer=self.weight_initializer, regularizer=self.weight_regularizer)
       b = tf.Variable(tf.zeros([self.n_hidden[0]]), name="bias")
 
-    with tf.variable_scope('output'):
+    with tf.variable_scope('output', reuse=None):
       w_out = tf.get_variable("weights", shape=[self.n_hidden[0], self.n_classes], initializer=self.weight_initializer, regularizer=self.weight_regularizer)
       b_out = tf.Variable(tf.zeros([self.n_classes]), name="bias")
 
     input = self.activation_fn(tf.matmul(x, W) + b)
-
-    output = tf.matmul(input, w_out) + b_out
+    output = tf.matmul(input, w_out)
 
     #######################
     # END OF YOUR CODE    #
@@ -136,9 +135,9 @@ class MLP(object):
     #######################
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits, labels, name=None))
     with tf.variable_scope("hidden", reuse=True):
-      loss += tf.reduce_sum(tf.get_variable("weights")**2)
+      loss += 0.5 * tf.reduce_sum(tf.get_variable("weights")**2)
     with tf.variable_scope("output", reuse=True):
-      loss += tf.reduce_sum(tf.get_variable("weights")**2)
+      loss += 0.5 * tf.reduce_sum(tf.get_variable("weights")**2)
     ########################
     # END OF YOUR CODE    #
     #######################

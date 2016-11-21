@@ -99,33 +99,21 @@ def train():
   y_ = tf.placeholder(tf.float32, shape=[BATCH_SIZE_DEFAULT, 10])
 
   model = MLP()
-  with tf.name_scope('SGD'):
-    x_ = model.inference(x)
-    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(model.loss(x_, y_))
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(x_, y_, name=None))
-    correct_prediction = tf.equal(tf.argmax(x_, 1), tf.argmax(y_, 1))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+  x_ = model.inference(x)
+  loss = model.loss(x_, y_)
+  accuracy = model.accuracy(x_, y_)
+  train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)
 
-  sess = tf.InteractiveSession()
-  tf.initialize_all_variables().run()
-  summary_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT, graph=tf.get_default_graph())
-  tf.scalar_summary("loss", cost)
-  tf.scalar_summary("accuracy", accuracy)
-  # merged_summary_op = tf.merge_all_summaries()
+  init = tf.initialize_all_variables()
+  sess = tf.Session()
+  sess.run(init)
 
   for _ in range(MAX_STEPS_DEFAULT):
       batch_xs, batch_ys = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
-      e, c, l =  sess.run([train_step, cost, accuracy], feed_dict={x: batch_xs, y_: batch_ys})
-      print(c,l)
+      i, l, acc = sess.run([train_step, loss, accuracy], feed_dict={x: batch_xs, y_: batch_ys})
+      print(l, acc)
 
-
-
-  # correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
-  # accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-  # test_xs, test_ys = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
-  # print(sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
-
-  ########################
+  #######################
   # END OF YOUR CODE    #
   #######################
 
