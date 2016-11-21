@@ -95,14 +95,14 @@ def train():
   ########################
   # PUT YOUR CODE HERE  #
   #######################
-  x = tf.placeholder(tf.float32, shape=[BATCH_SIZE_DEFAULT, 3072])
-  y_ = tf.placeholder(tf.float32, shape=[BATCH_SIZE_DEFAULT, 10])
+  x = tf.placeholder(tf.float32, shape=[None, 3072])
+  y_ = tf.placeholder(tf.float32, shape=[None, 10])
 
   model = MLP()
   x_ = model.inference(x)
   loss = model.loss(x_, y_)
   accuracy = model.accuracy(x_, y_)
-  train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)
+  train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
 
   init = tf.initialize_all_variables()
   sess = tf.Session()
@@ -111,7 +111,7 @@ def train():
   for _ in range(MAX_STEPS_DEFAULT):
       batch_xs, batch_ys = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
       i, l, acc = sess.run([train_step, loss, accuracy], feed_dict={x: batch_xs, y_: batch_ys})
-      print(l, acc)
+      # print(l, acc)
 
   #######################
   # END OF YOUR CODE    #
