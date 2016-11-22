@@ -91,16 +91,46 @@ class MLP(object):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
+    # with tf.variable_scope('hidden', reuse=None):
+    #   W = tf.get_variable("weights", shape=[x.get_shape()[1], self.n_hidden[0]], initializer=self.weight_initializer, regularizer=self.weight_regularizer)
+    #   tf.histogram_summary("hidden_weights", W)
+    #   b = tf.Variable(tf.zeros([self.n_hidden[0]]), name="bias")
+    #   tf.histogram_summary("hidden_bias", b)
+    #
+    # with tf.variable_scope('output', reuse=None):
+    #   w_out = tf.get_variable("weights", shape=[self.n_hidden[0], self.n_classes], initializer=self.weight_initializer, regularizer=self.weight_regularizer)
+    #   tf.histogram_summary("output_weights", w_out)
+    #   b_out = tf.Variable(tf.zeros([self.n_classes]), name="bias")
+    #   tf.histogram_summary("output_bias", b_out)
+
+    # with tf.variable_scope('hidden', reuse=None):
+    #   W = tf.get_variable("weights", shape=[x.get_shape()[1], self.n_hidden[0]], initializer=tf.random_normal_initializer(mean=0.0, stddev=1e-2), regularizer=self.weight_regularizer)
+    #   tf.histogram_summary("hidden_weights", W)
+    #   b = tf.Variable(tf.zeros([self.n_hidden[0]]), name="bias")
+    #   tf.histogram_summary("hidden_bias", b)
+    #
+    # with tf.variable_scope('output', reuse=None):
+    #   w_out = tf.get_variable("weights", shape=[self.n_hidden[0], self.n_classes], initializer=tf.random_normal_initializer(mean=0.0, stddev=1e-2), regularizer=self.weight_regularizer)
+    #   tf.histogram_summary("output_weights", w_out)
+    #   b_out = tf.Variable(tf.zeros([self.n_classes]), name="bias")
+    #   tf.histogram_summary("output_bias", b_out)
+
     with tf.variable_scope('hidden', reuse=None):
-      W = tf.get_variable("weights", shape=[x.get_shape()[1], self.n_hidden[0]], initializer=self.weight_initializer, regularizer=self.weight_regularizer)
+      W = tf.get_variable("weights", shape=[x.get_shape()[1], self.n_hidden[0]], initializer=tf.random_uniform_initializer(minval=-1e-5, maxval=1e-5), regularizer=self.weight_regularizer)
+      tf.histogram_summary("hidden_weights", W)
       b = tf.Variable(tf.zeros([self.n_hidden[0]]), name="bias")
+      tf.histogram_summary("hidden_bias", b)
 
     with tf.variable_scope('output', reuse=None):
-      w_out = tf.get_variable("weights", shape=[self.n_hidden[0], self.n_classes], initializer=self.weight_initializer, regularizer=self.weight_regularizer)
+      w_out = tf.get_variable("weights", shape=[self.n_hidden[0], self.n_classes], initializer=tf.random_uniform_initializer(minval=-1e-5, maxval=1e-5), regularizer=self.weight_regularizer)
+      tf.histogram_summary("output_weights", w_out)
       b_out = tf.Variable(tf.zeros([self.n_classes]), name="bias")
+      tf.histogram_summary("output_bias", b_out)
 
-    input = self.activation_fn(tf.matmul(x, W) + b)
-    output = tf.matmul(input, w_out)
+    with tf.name_scope('relu_layer'):
+      input = self.activation_fn(tf.matmul(x, W) + b)
+    with tf.name_scope('linear_layer'):
+      output = tf.matmul(input, w_out) + b_out
 
     #######################
     # END OF YOUR CODE    #

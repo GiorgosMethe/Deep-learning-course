@@ -100,18 +100,39 @@ def train():
 
   model = MLP()
   x_ = model.inference(x)
-  loss = model.loss(x_, y_)
-  accuracy = model.accuracy(x_, y_)
-  train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
+  with tf.name_scope('loss'):
+    loss = model.loss(x_, y_)
+  with tf.name_scope('accuracy'):
+    accuracy = model.accuracy(x_, y_)
+  with tf.name_scope('train_step'):
+    train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
+
 
   init = tf.initialize_all_variables()
   sess = tf.Session()
   sess.run(init)
 
-  for _ in range(MAX_STEPS_DEFAULT):
+  tf.scalar_summary('accuracy', accuracy)
+  tf.scalar_summary('loss', loss)
+  tf.histogram_summary("logits", x_)
+  merged = tf.merge_all_summaries()
+
+
+  train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/train', sess.graph)
+  test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/test', sess.graph)
+
+  for i in range(1, MAX_STEPS_DEFAULT+1):
       batch_xs, batch_ys = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
-      i, l, acc = sess.run([train_step, loss, accuracy], feed_dict={x: batch_xs, y_: batch_ys})
-      # print(l, acc)
+      __, Summary, l, acc = sess.run([train_step, merged, loss, accuracy], feed_dict={x: batch_xs, y_: batch_ys})
+      train_writer.add_summary(Summary, i)
+
+      if i % 100 == 0.0:
+          batch_xs, batch_ys = cifar10.test.images, cifar10.test.labels
+          __, Summary, l, acc = sess.run([train_step, merged, loss, accuracy], feed_dict={x: batch_xs, y_: batch_ys})
+          test_writer.add_summary(Summary, i)
+
+
+  train_writer.close()
 
   #######################
   # END OF YOUR CODE    #

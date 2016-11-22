@@ -20,6 +20,9 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
+\usepackage{fancyvrb,xcolor}
+\usepackage{graphicx}
+
 
 \title{Report for the Deep Learning Course Assignment 2 }
 
@@ -34,8 +37,8 @@
 % author name.
 
 \author{
-  David S.~Hippocampus \\
-  \texttt{hippo@cs.cranberry-lemon.edu}
+  Georgios Methenitis \\
+  \texttt{georgios.methenitis@cwi.nl}
 }
 
 \begin{document}
@@ -44,50 +47,184 @@
 \maketitle
 
 \begin{abstract}
-  Should contain information about the current task and the summary of the study
-  of the MLP model on CIFAR10 dataset.
+In this assignment I got familiar with TensorFlow. I created a single hidden layer network with ReLU activation function to learn features for the CIFAR10 dataset.
 \end{abstract}
 
 \section{Task 1}
-Should contain information about the current task and some description of the MLP model and TensorFlow framework.
-Put the answers for the questions from the Task 1 into this section.
+\begin{enumerate}
+\item 
+\item There are two ways to declare variable in TensorFlow:
+\begin{itemize}
+\item \begin{small}
+\begin{verbatim}
+var = tf.get_variable("var_name", shape=[..., ...])
+\end{verbatim}
+\end{small}
+\item \begin{small}
+\begin{verbatim}
+var = tf.Variable(tf.zeros([..., ...]), name="var_name")
+\end{verbatim}
+\end{small}
+\end{itemize}
+
+\item The command \texttt{tf.shape(x)} returns the shape of the input of tensor \texttt{x} in an 1-D vector, while \texttt{x.get\_shape()} return the size of the tensor.
+\item
+\item
+\item
+\item
+\item
+\item
+\item
+\end{enumerate}
 
 \section{Task 2}
-Should contain your study of the default model from the Task 2.
+In this task I implemented the following functions in \texttt{mlp.py}, more specifically the \texttt{inference}, \texttt{loss}, and \texttt{accuracy}.
 
-\section{Task 3}
-Should contain results of your experiments.
-Please, describe all experiments settings to make the report self-contained without this file.
-Put each experiment in separate subsection.
+\begin{small}
+\begin{verbatim}
+  def inference(self, x):
+    with tf.variable_scope('hidden', reuse=None):
+      W = tf.get_variable("weights", shape=[x.get_shape()[1], self.n_hidden[0]],
+       initializer=self.weight_initializer, regularizer=self.weight_regularizer)
+      tf.histogram_summary("hidden_weights", W)
+      b = tf.Variable(tf.zeros([self.n_hidden[0]]), name="bias")
+      tf.histogram_summary("hidden_bias", b)
 
-\subsection{Experiment-1: Weight initialization}
-\subsection{Experiment-2: Interaction between initialization and activation}
-\subsection{Experiment-3: Architecture}
-\subsection{Experiment-4: Optimizers}
-\subsection{Experiment-5: Be creative}
+    with tf.variable_scope('output', reuse=None):
+      w_out = tf.get_variable("weights", shape=[self.n_hidden[0], self.n_classes],
+       initializer=self.weight_initializer, regularizer=self.weight_regularizer)
+      tf.histogram_summary("output_weights", w_out)
+      b_out = tf.Variable(tf.zeros([self.n_classes]), name="bias")
+      tf.histogram_summary("output_bias", b_out)
+
+    with tf.name_scope('relu_layer'):
+      input = self.activation_fn(tf.matmul(x, W) + b)
+    with tf.name_scope('linear_layer'):
+      output = tf.matmul(input, w_out) + b_out
+
+    return output
+    
+  def loss(self, logits, labels):
+
+    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits, labels, name=None))
+    with tf.variable_scope("hidden", reuse=True):
+      loss += 0.5 * tf.reduce_sum(tf.get_variable("weights")**2)
+    with tf.variable_scope("output", reuse=True):
+      loss += 0.5 * tf.reduce_sum(tf.get_variable("weights")**2)
+
+    return loss
+    
+  def accuracy(self, logits, labels):
+    correct_prediction = tf.equal(tf.argmax(labels, 1), tf.argmax(logits, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    return accuracy
+\end{verbatim}
+\end{small}
+I also implemented the function \texttt{train} in the file \texttt{train\_mlp.py}:
+\begin{small}
+\begin{verbatim}
+def train():
+  # placeholder for input and output tensors allowing to create operations and the computation graph
+  x = tf.placeholder(tf.float32, shape=[None, 3072])
+  y_ = tf.placeholder(tf.float32, shape=[None, 10])
+  
+  # model, namescopes for summary
+  model = MLP()
+  x_ = model.inference(x)
+  with tf.name_scope('loss'):
+    loss = model.loss(x_, y_)
+  with tf.name_scope('accuracy'):
+    accuracy = model.accuracy(x_, y_)
+  with tf.name_scope('train_step'):
+    train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
+  
+  # session
+  init = tf.initialize_all_variables()
+  sess = tf.Session()
+  sess.run(init)
+
+  # merged summary for the graph, the loss and accuracy
+  tf.scalar_summary('accuracy', accuracy)
+  tf.scalar_summary('loss', loss)
+  tf.histogram_summary("logits", x_) # logits histogram
+  merged = tf.merge_all_summaries()
+
+
+  train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/train', sess.graph)
+  test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/test', sess.graph)
+
+  for i in range(1, MAX_STEPS_DEFAULT+1):
+      batch_xs, batch_ys = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
+      __, Summary, l, acc = sess.run([train_step, merged, loss, accuracy],
+      feed_dict={x: batch_xs, y_: batch_ys})
+      train_writer.add_summary(Summary, i)
+
+      if i % 100 == 0.0:
+          batch_xs, batch_ys = cifar10.test.images, cifar10.test.labels
+          __, Summary, l, acc = sess.run([train_step, merged, loss, accuracy],
+           feed_dict={x: batch_xs, y_: batch_ys})
+          test_writer.add_summary(Summary, i)
+
+  train_writer.close()
+\end{verbatim}
+\end{small}
+
+Figure~\ref{fig:acclosstrain} presents the accuracy and the loss in the training set recorded for every epoch.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{loss.png}\	
+\includegraphics[width=0.45\textwidth]{accuracy.png}
+\caption{Recorded accuracy and loss for the training set.}
+\label{fig:acclosstrain}
+\end{figure}
+
+Figure~\ref{fig:acclosstest} presents the accuracy and the loss in the test set recorded for every 100-epochs.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{accuracy_t.png}\	
+\includegraphics[width=0.45\textwidth]{loss_t.png}
+\caption{Recorded accuracy and loss for the test set.}
+\label{fig:acclosstest}
+\end{figure}
+
+Figure~\ref{fig:graph} presents the graph of the created model as this is illustrated by TensorBoard.
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{graph.png}
+\caption{Graph of the model.}
+\label{fig:graph}
+\end{figure}
+
+Figure~\ref{fig:histogramsunits} presents the histograms of the weights and the biases in every unit of the model, in the hidden and the output units respectively.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.3\textwidth]{hidden_weights.png}
+\includegraphics[width=0.3\textwidth]{hidden_bias.png}
+\includegraphics[width=0.3\textwidth]{output_weights.png}
+\includegraphics[width=0.3\textwidth]{output_bias.png}
+\caption{Histograms of weights and bias in the hidden layer, and weights and bias in the output linear layer.}
+\label{fig:histogramsunits}
+\end{figure}
+
+Figure~\ref{fig:histogramlogits} presents the histogram of the logits.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.4\textwidth]{logits.png}
+\caption{Histograms of logits.}
+\label{fig:histogramlogits}
+\end{figure}
+
 
 \section{Conclusion}
 Should contain conclusion of this study.
 For example, you can try to answer the following questions.
 What was done during this assignment? What features of TensorBoard were positive and what were negative for implementing MLP model and performing the experiments?
 What are the main insights you got from the study of the MLP model on CIFAR10 dataset?
-
-\section*{References}
-
-\small
-
-[1] Alexander, J.A.\ \& Mozer, M.C.\ (1995) Template-based algorithms
-for connectionist rule extraction. In G.\ Tesauro, D.S.\ Touretzky and
-T.K.\ Leen (eds.), {\it Advances in Neural Information Processing
-  Systems 7}, pp.\ 609--616. Cambridge, MA: MIT Press.
-
-[2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS:
-  Exploring Realistic Neural Models with the GEneral NEural SImulation
-  System.}  New York: TELOS/Springer--Verlag.
-
-[3] Hasselmo, M.E., Schnell, E.\ \& Barkai, E.\ (1995) Dynamics of
-learning and recall at excitatory recurrent synapses and cholinergic
-modulation in rat hippocampal region CA3. {\it Journal of
-  Neuroscience} {\bf 15}(7):5249-5262.
 
 \end{document}
