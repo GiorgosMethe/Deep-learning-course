@@ -52,7 +52,7 @@ In this assignment I got familiar with TensorFlow. I created a single hidden lay
 
 \section{Task 1}
 \begin{enumerate}
-\item 
+\item TensorFlow \emph{variables} are stored structures containing tensors, \emph{constants} are constant variables in Tensorflow, \emph{placeholders} are used in the place of variables at graph initialization when there are no variables. The differences are that constants cannot change their values in contrast with variables, and that placeholder are replacing variables at initialization phase.
 \item There are two ways to declare variable in TensorFlow:
 \begin{itemize}
 \item \begin{small}
@@ -70,9 +70,9 @@ var = tf.Variable(tf.zeros([..., ...]), name="var_name")
 \item The command \texttt{tf.shape(x)} returns the shape of the input of tensor \texttt{x} in an 1-D vector, while \texttt{x.get\_shape()} return the size of the tensor.
 \item
 \item
-\item
-\item
-\item
+\item A computational \emph{graph}, \emph{tensors} for the variables and \emph{operator}.
+\item In variable scopes, variables can be created, adopting the prefix of the scope in their name, variable scopes enable variable sharing in different places in the code. The differences between name scopes and variable scopes is in the former creates an hierarchy for operations and variables in the graph, while the latter helps mostly in variable sharing.
+\item You can freeze a variable tensor during training by setting \texttt{trainable=True} upon creating the variable, this way it will not get updated during optimization.
 \item
 \item
 \end{enumerate}
