@@ -48,6 +48,7 @@
 
 \begin{abstract}
 In this assignment I got familiar with TensorFlow. I created a single hidden layer network with ReLU activation function to learn features for the CIFAR10 dataset.
+The accuracy obtained in the test set, $0.46$, is similar to the neural network model of the previous assignment. 
 \end{abstract}
 
 \section{Task 1}
@@ -73,8 +74,10 @@ var = tf.Variable(tf.zeros([..., ...]), name="var_name")
 \item A computational \emph{graph}, \emph{tensors} for the variables and \emph{operator}.
 \item In variable scopes, variables can be created, adopting the prefix of the scope in their name, variable scopes enable variable sharing in different places in the code. The differences between name scopes and variable scopes is in the former creates an hierarchy for operations and variables in the graph, while the latter helps mostly in variable sharing.
 \item You can freeze a variable tensor during training by setting \texttt{trainable=True} upon creating the variable, this way it will not get updated during optimization.
-\item
-\item
+\item Yes Tensorflow uses automatic differentiation, while this can be a disadvantage for higher numbers of hidden layer due to dependencies.
+The advantages are obvious, there is no need to compute difficult derivatives of high complexity.
+\item One way is like the assignment, reading using a python script the data for every train step and feeding the data in the graph.
+The other way is to read all the data from csv files at the beginning.
 \end{enumerate}
 
 \section{Task 2}
@@ -170,7 +173,7 @@ def train():
 \end{small}
 
 Figure~\ref{fig:acclosstrain} presents the accuracy and the loss in the training set recorded for every epoch.
-
+The accuracy is higher than $0.45$ similar to the performance in the training set of the previous assignment, while the loss converges close to zero after 500 epochs.
 \begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{loss.png}\	
@@ -178,8 +181,9 @@ Figure~\ref{fig:acclosstrain} presents the accuracy and the loss in the training
 \caption{Recorded accuracy and loss for the training set.}
 \label{fig:acclosstrain}
 \end{figure}
+Figure~\ref{fig:acclosstest} presents the accuracy and the loss in the test set recorded every 100-epochs.
+As you can see the accuracy drops after 1200 epochs, the model is overfitting.
 
-Figure~\ref{fig:acclosstest} presents the accuracy and the loss in the test set recorded for every 100-epochs.
 
 \begin{figure}
 \centering
@@ -190,6 +194,10 @@ Figure~\ref{fig:acclosstest} presents the accuracy and the loss in the test set 
 \end{figure}
 
 Figure~\ref{fig:graph} presents the graph of the created model as this is illustrated by TensorBoard.
+Using different namespaces where necessary we can illustrate the structure of the model.
+You can see the two placeholder, one given as input to the relu layer and the second as the output of the linear layer, also connected to the accuracy module.
+The two layer are connected to the loss module that then updates all weights in the output and hidden layers.
+
 
 
 \begin{figure}
@@ -212,6 +220,7 @@ Figure~\ref{fig:histogramsunits} presents the histograms of the weights and the 
 \end{figure}
 
 Figure~\ref{fig:histogramlogits} presents the histogram of the logits.
+We can observe that only the variance of the logits change.
 
 \begin{figure}
 \centering
@@ -222,9 +231,7 @@ Figure~\ref{fig:histogramlogits} presents the histogram of the logits.
 
 
 \section{Conclusion}
-Should contain conclusion of this study.
-For example, you can try to answer the following questions.
-What was done during this assignment? What features of TensorBoard were positive and what were negative for implementing MLP model and performing the experiments?
-What are the main insights you got from the study of the MLP model on CIFAR10 dataset?
+Although I did not have time to finish all the questions in the assignment I found it very useful.
+Tensorflow provides an easy to use library to create and train models and visualize everything is happening during the training of the model.
 
 \end{document}
