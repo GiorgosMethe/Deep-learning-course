@@ -48,12 +48,13 @@
 
 \begin{abstract}
 In this assignment I got familiar with TensorFlow. I created a single hidden layer network with ReLU activation function to learn features for the CIFAR10 dataset.
-The accuracy obtained in the test set, $0.46$, is similar to the neural network model of the previous assignment. 
+Similarly to the previous assignment, the accuracy obtained in the test set was approximately $0.46$.
 \end{abstract}
 
 \section{Task 1}
 \begin{enumerate}
 \item TensorFlow \emph{variables} are stored structures containing tensors, \emph{constants} are constant variables in Tensorflow, \emph{placeholders} are used in the place of variables at graph initialization when there are no variables. The differences are that constants cannot change their values in contrast with variables, and that placeholder are replacing variables at initialization phase.
+In the context of convolutional neural networks constants can be the convolution filters, tensor for the input pixel values, and placeholder for initializing the pixel input space.
 \item There are two ways to declare variable in TensorFlow:
 \begin{itemize}
 \item \begin{small}
@@ -74,10 +75,10 @@ var = tf.Variable(tf.zeros([..., ...]), name="var_name")
 \item A computational \emph{graph}, \emph{tensors} for the variables and \emph{operator}.
 \item In variable scopes, variables can be created, adopting the prefix of the scope in their name, variable scopes enable variable sharing in different places in the code. The differences between name scopes and variable scopes is in the former creates an hierarchy for operations and variables in the graph, while the latter helps mostly in variable sharing.
 \item You can freeze a variable tensor during training by setting \texttt{trainable=True} upon creating the variable, this way it will not get updated during optimization.
-\item Yes Tensorflow uses automatic differentiation, while this can be a disadvantage for higher numbers of hidden layer due to dependencies.
-The advantages are obvious, there is no need to compute difficult derivatives of high complexity.
+\item Yes Tensorflow uses automatic differentiation.
+The advantages are obvious, there is no need to compute difficult derivatives of high complexity, while this can be a disadvantage for large numbers of hidden layers due to dependencies to compute the derivatives.
 \item One way is like the assignment, reading using a python script the data for every train step and feeding the data in the graph.
-The other way is to read all the data from csv files at the beginning.
+The other way is to read all the data from files at the beginning.
 \end{enumerate}
 
 \section{Task 2}
@@ -232,6 +233,6 @@ We can observe that only the variance of the logits change.
 
 \section{Conclusion}
 Although I did not have time to finish all the questions in the assignment I found it very useful.
-Tensorflow provides an easy to use library to create and train models and visualize everything is happening during the training of the model.
+Tensorflow provides an easy to use library to create and train models, visualizing everything is happening during the training of the model.
 
 \end{document}
