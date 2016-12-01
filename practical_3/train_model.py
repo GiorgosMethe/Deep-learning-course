@@ -12,7 +12,7 @@ from convnet import ConvNet
 import cifar10_utils
 
 LEARNING_RATE_DEFAULT = 1e-4
-BATCH_SIZE_DEFAULT = 128
+BATCH_SIZE_DEFAULT = 64
 MAX_STEPS_DEFAULT = 15000
 EVAL_FREQ_DEFAULT = 1000
 CHECKPOINT_FREQ_DEFAULT = 5000
@@ -99,7 +99,7 @@ def train():
         accuracy = model.accuracy(x_, y_)
 
     with tf.name_scope('train'):
-        train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
+        train_step = tf.train.AdamOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
 
     init = tf.initialize_all_variables()
     session = tf.Session()
@@ -118,9 +118,19 @@ def train():
         __, summary, l, acc = session.run([train_step, merged, loss, accuracy], feed_dict={x:batch_x, y_:batch_y})
         train_writer.add_summary(summary, iteration)
 
-        if iteration % EVAL_FREQ_DEFAULT == 0.0:
-            batch_x, batch_y = cifar10.test.images, cifar10.test.labels
-            __, summary, l, acc = session.run([train_step, merged, loss, accuracy], feed_dict={x: batch_x, y_: batch_y})
+        if iteration % 1000 == 0.0:
+            _split  = 250
+            avg_loss, avg_acc = 0.0, 0.0
+            for _iter in range(int(len(cifar10.test.images) / _split)):
+                batch_x, batch_y = cifar10.test.images[_iter * _split:((_iter + 1) * _split)],\
+                                   cifar10.test.labels[_iter * _split:((_iter + 1) * _split)]
+
+                __, summary, l, acc = session.run([train_step, merged, loss, accuracy], feed_dict={x: batch_x, y_: batch_y})
+                avg_loss += l
+                avg_acc += acc
+            avg_loss /= float(len(cifar10.test.images) / _split)
+            avg_acc /= float(len(cifar10.test.images) / _split)
+            print(iteration, avg_loss, avg_acc)
             test_writer.add_summary(summary, iteration)
 
     ########################
