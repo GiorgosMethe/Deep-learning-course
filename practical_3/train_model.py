@@ -7,6 +7,9 @@ import os
 
 import tensorflow as tf
 import numpy as np
+from convnet import ConvNet
+
+import cifar10_utils
 
 LEARNING_RATE_DEFAULT = 1e-4
 BATCH_SIZE_DEFAULT = 128
@@ -19,6 +22,8 @@ OPTIMIZER_DEFAULT = 'ADAM'
 DATA_DIR_DEFAULT = './cifar10/cifar-10-batches-py'
 LOG_DIR_DEFAULT = './logs/cifar10'
 CHECKPOINT_DIR_DEFAULT = './checkpoints'
+
+cifar10 = cifar10_utils.get_cifar10(DATA_DIR_DEFAULT)
 
 def train_step(loss):
     """
@@ -80,7 +85,44 @@ def train():
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    raise NotImplementedError
+    model = ConvNet()
+
+    x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+    y_ = tf.placeholder(tf.float32, shape=[None, 10])
+
+    x_ = model.inference(x)
+
+    with tf.name_scope('loss'):
+        loss = model.loss(x_, y_)
+
+    with tf.name_scope('accuracy'):
+        accuracy = model.accuracy(x_, y_)
+
+    with tf.name_scope('train'):
+        train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
+
+    init = tf.initialize_all_variables()
+    session = tf.Session()
+    session.run(init)
+
+    tf.scalar_summary('accuracy', accuracy)
+    tf.scalar_summary('loss', loss)
+    tf.histogram_summary('logits', x_)
+    merged = tf.merge_all_summaries()
+
+    train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/train', session.graph)
+    test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/test', session.graph)
+
+    for iteration in range(1, MAX_STEPS_DEFAULT+1):
+        batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
+        __, summary, l, acc = session.run([train_step, merged, loss, accuracy], feed_dict={x:batch_x, y_:batch_y})
+        train_writer.add_summary(summary, iteration)
+
+        if iteration % EVAL_FREQ_DEFAULT == 0.0:
+            batch_x, batch_y = cifar10.test.images, cifar10.test.labels
+            __, summary, l, acc = session.run([train_step, merged, loss, accuracy], feed_dict={x: batch_x, y_: batch_y})
+            test_writer.add_summary(summary, iteration)
+
     ########################
     # END OF YOUR CODE    #
     ########################
