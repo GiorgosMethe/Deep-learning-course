@@ -12,7 +12,7 @@ from convnet import ConvNet
 import cifar10_utils
 
 LEARNING_RATE_DEFAULT = 1e-4
-BATCH_SIZE_DEFAULT = 128
+BATCH_SIZE_DEFAULT = 64
 MAX_STEPS_DEFAULT = 15000
 EVAL_FREQ_DEFAULT = 1000
 CHECKPOINT_FREQ_DEFAULT = 5000
@@ -113,13 +113,18 @@ def train():
     train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/train', session.graph)
     test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/test', session.graph)
 
+    saver = tf.train.Saver(tf.all_variables())
+
     for iteration in range(1, MAX_STEPS_DEFAULT+1):
         batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
         __, summary, l, acc = session.run([train_step, merged, loss, accuracy], feed_dict={x:batch_x, y_:batch_y})
         train_writer.add_summary(summary, iteration)
 
+        if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
+            saver.save(session, CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(iteration) + ".ckpt")
+
         if iteration % 1000 == 0.0:
-            _split  = 250
+            _split = 250
             avg_loss, avg_acc = 0.0, 0.0
             for _iter in range(int(len(cifar10.test.images) / _split)):
                 batch_x, batch_y = cifar10.test.images[_iter * _split:((_iter + 1) * _split)],\
@@ -132,7 +137,6 @@ def train():
             avg_acc /= float(len(cifar10.test.images) / _split)
             print(iteration, avg_loss, avg_acc)
             test_writer.add_summary(summary, iteration)
-
     ########################
     # END OF YOUR CODE    #
     ########################
@@ -179,7 +183,59 @@ def train_siamese():
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    raise NotImplementedError
+    model = ConvNet()
+
+    x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+    y_ = tf.placeholder(tf.float32, shape=[None, 10])
+
+    x_ = model.inference(x)
+
+    with tf.name_scope('loss'):
+        loss = model.loss(x_, y_)
+
+    with tf.name_scope('accuracy'):
+        accuracy = model.accuracy(x_, y_)
+
+    with tf.name_scope('train'):
+        train_step = tf.train.AdamOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
+
+    init = tf.initialize_all_variables()
+    session = tf.Session()
+    session.run(init)
+
+    tf.scalar_summary('accuracy', accuracy)
+    tf.scalar_summary('loss', loss)
+    tf.histogram_summary('logits', x_)
+    merged = tf.merge_all_summaries()
+
+    train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/train', session.graph)
+    test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/test', session.graph)
+
+    saver = tf.train.Saver(tf.all_variables())
+
+    for iteration in range(1, MAX_STEPS_DEFAULT + 1):
+        batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
+        __, summary, l, acc = session.run([train_step, merged, loss, accuracy], feed_dict={x: batch_x, y_: batch_y})
+        train_writer.add_summary(summary, iteration)
+
+        if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
+            saver.save(session, CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(iteration) + ".ckpt")
+
+        if iteration % 1000 == 0.0:
+            _split = 250
+            avg_loss, avg_acc = 0.0, 0.0
+            for _iter in range(int(len(cifar10.test.images) / _split)):
+                batch_x, batch_y = cifar10.test.images[_iter * _split:((_iter + 1) * _split)], \
+                                   cifar10.test.labels[_iter * _split:((_iter + 1) * _split)]
+
+                __, summary, l, acc = session.run([train_step, merged, loss, accuracy],
+                                                  feed_dict={x: batch_x, y_: batch_y})
+                avg_loss += l
+                avg_acc += acc
+            avg_loss /= float(len(cifar10.test.images) / _split)
+            avg_acc /= float(len(cifar10.test.images) / _split)
+            print(iteration, avg_loss, avg_acc)
+            test_writer.add_summary(summary, iteration)
     ########################
     # END OF YOUR CODE    #
     ########################
@@ -203,7 +259,24 @@ def feature_extraction():
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    raise NotImplementedError
+    model = ConvNet()
+
+    x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+    y_ = tf.placeholder(tf.float32, shape=[None, 10])
+
+    x_ = model.inference(x)
+
+    init = tf.initialize_all_variables()
+    session = tf.Session()
+    session.run(init)
+
+    new_saver = tf.train.import_meta_graph(CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt.meta")
+    new_saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
+
+    batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
+    x_ = session.run(x_, feed_dict={x: batch_x, y_: batch_y})
+    print(x_)
+
     ########################
     # END OF YOUR CODE    #
     ########################
@@ -268,7 +341,7 @@ if __name__ == '__main__':
                       help='Checkpoint directory')
     parser.add_argument('--is_train', type = str, default = True,
                       help='Training or feature extraction')
-    parser.add_argument('--train_model', type = str, default = 'linear',
+    parser.add_argument('--train_model', type = str, default = 'siamese',
                       help='Type of model. Possible options: linear and siamese')
 
     FLAGS, unparsed = parser.parse_known_args()
