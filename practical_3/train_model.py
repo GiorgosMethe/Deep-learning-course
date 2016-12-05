@@ -10,6 +10,7 @@ import numpy as np
 from convnet import ConvNet
 
 import cifar10_utils
+import cifar10_siamese_utils
 
 LEARNING_RATE_DEFAULT = 1e-4
 BATCH_SIZE_DEFAULT = 64
@@ -24,6 +25,14 @@ LOG_DIR_DEFAULT = './logs/cifar10'
 CHECKPOINT_DIR_DEFAULT = './checkpoints'
 
 cifar10 = cifar10_utils.get_cifar10(DATA_DIR_DEFAULT)
+
+cifar10_siamese = cifar10_siamese_utils.get_cifar10(DATA_DIR_DEFAULT,
+                                                     one_hot=False)
+
+val_set = cifar10_siamese_utils.create_dataset(cifar10_siamese,
+                                               num_tuples=600,
+                                               batch_size=BATCH_SIZE_DEFAULT,
+                                               fraction_same=0.2)
 
 def train_step(loss):
     """
@@ -183,59 +192,7 @@ def train_siamese():
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    model = ConvNet()
-
-    x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
-    y_ = tf.placeholder(tf.float32, shape=[None, 10])
-
-    x_ = model.inference(x)
-
-    with tf.name_scope('loss'):
-        loss = model.loss(x_, y_)
-
-    with tf.name_scope('accuracy'):
-        accuracy = model.accuracy(x_, y_)
-
-    with tf.name_scope('train'):
-        train_step = tf.train.AdamOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
-
-    init = tf.initialize_all_variables()
-    session = tf.Session()
-    session.run(init)
-
-    tf.scalar_summary('accuracy', accuracy)
-    tf.scalar_summary('loss', loss)
-    tf.histogram_summary('logits', x_)
-    merged = tf.merge_all_summaries()
-
-    train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/train', session.graph)
-    test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/test', session.graph)
-
-    saver = tf.train.Saver(tf.all_variables())
-
-    for iteration in range(1, MAX_STEPS_DEFAULT + 1):
-        batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
-        __, summary, l, acc = session.run([train_step, merged, loss, accuracy], feed_dict={x: batch_x, y_: batch_y})
-        train_writer.add_summary(summary, iteration)
-
-        if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
-            saver.save(session, CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(iteration) + ".ckpt")
-
-        if iteration % 1000 == 0.0:
-            _split = 250
-            avg_loss, avg_acc = 0.0, 0.0
-            for _iter in range(int(len(cifar10.test.images) / _split)):
-                batch_x, batch_y = cifar10.test.images[_iter * _split:((_iter + 1) * _split)], \
-                                   cifar10.test.labels[_iter * _split:((_iter + 1) * _split)]
-
-                __, summary, l, acc = session.run([train_step, merged, loss, accuracy],
-                                                  feed_dict={x: batch_x, y_: batch_y})
-                avg_loss += l
-                avg_acc += acc
-            avg_loss /= float(len(cifar10.test.images) / _split)
-            avg_acc /= float(len(cifar10.test.images) / _split)
-            print(iteration, avg_loss, avg_acc)
-            test_writer.add_summary(summary, iteration)
+    cifar10_siamese.train.next_batch(BATCH_SIZE_DEFAULT)
     ########################
     # END OF YOUR CODE    #
     ########################
