@@ -105,12 +105,12 @@ class ConvNet(object):
 
                 b_fc3 = tf.Variable(tf.constant(0.0, shape=[10]), name='biases')
 
-            h_fc3 = tf.matmul(h_fc2, w_fc3) + b_fc3
+            logits = tf.matmul(h_fc2, w_fc3) + b_fc3
 
             ########################
             # END OF YOUR CODE    #
             ########################
-        return h_fc3
+        return logits
 
     def accuracy(self, logits, labels):
         """

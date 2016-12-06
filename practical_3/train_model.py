@@ -8,6 +8,7 @@ import os
 import tensorflow as tf
 import numpy as np
 from convnet import ConvNet
+from siamese import Siamese
 
 import cifar10_utils
 import cifar10_siamese_utils
@@ -192,7 +193,31 @@ def train_siamese():
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    cifar10_siamese.train.next_batch(BATCH_SIZE_DEFAULT)
+    model = Siamese()
+
+    x1 = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+    x2 = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+    y_ = tf.placeholder(tf.float32, shape=[None,])
+
+    x1_ = model.inference(x1, reuse=None)
+    x2_ = model.inference(x2, reuse=True)
+
+    with tf.name_scope('loss'):
+        loss = model.loss(x1_, x2_, y_, 0.2)
+
+    with tf.name_scope('train'):
+        train_step = tf.train.AdamOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
+
+    init = tf.initialize_all_variables()
+    session = tf.Session()
+    session.run(init)
+
+    for iteration in range(1, MAX_STEPS_DEFAULT+1):
+        batch_x1, batch_x2, batch_labels = cifar10_siamese.train.next_batch(BATCH_SIZE_DEFAULT)
+        __, l = session.run([train_step, loss], feed_dict={x1:batch_x1, x2:batch_x2, y_:batch_labels})
+        print(l)
+
+
     ########################
     # END OF YOUR CODE    #
     ########################

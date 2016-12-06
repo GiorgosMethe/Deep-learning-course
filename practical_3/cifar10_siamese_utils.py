@@ -157,11 +157,25 @@ def create_dataset(source_data, num_tuples = 500, batch_size = 128, fraction_sam
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    print(source_data.train._images.shape)
+    dset = []
+    # for sample in range(num_tuples):
+    #   # number of correct images
+    #   n_correct = int(fraction_same * batch_size)
+    #   random_im = np.array(np.random.choice(range(source_data.train._images.shape[0]), replace=False, size=batch_size))
+    #
+    #   matches = [np.where(source_data.train._labels == source_data.train._labels[x]) for x in random_im]
+    #   mismatches = [np.where(source_data.train._labels != source_data.train._labels[x]) for x in random_im]
+    #
+    #   tuple = []
+    #   for i in range(0, n_correct):
+    #     tuple.append((random_im[i], np.random.choice(np.array(matches[i])[0]), 1))
+    #   for j in range(batch_size - n_correct, i, -1):
+    #     tuple.append((random_im[i], np.random.choice(np.array(mismatches[i])[0]), 0))
+    #   dset.append(tuple)
     ########################
     # END OF YOUR CODE    #
     ########################
-    return dset
+    return np.array(dset)
 
 class DataSet(object):
   """
@@ -237,7 +251,14 @@ class DataSet(object):
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    raise NotImplementedError
+    n_correct = int(fraction_same * batch_size)
+    random_index = np.array(np.random.choice(range(self._images.shape[0]), replace=False, size=batch_size))
+    matches = [np.random.choice(np.array(np.where(self._labels == self._labels[x]))[0]) for x in random_index]
+    mismatches = [np.random.choice(np.array(np.where(self._labels != self._labels[x]))[0]) for x in random_index]
+    x1 = self._images[random_index]
+    x2 = self._images[matches[:n_correct]]
+    x2 = np.vstack((x2, self._images[mismatches[n_correct:]]))
+    labels = np.hstack((np.ones((n_correct)), np.zeros((batch_size-n_correct))))
     ########################
     # END OF YOUR CODE    #
     ########################
