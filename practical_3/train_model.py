@@ -14,7 +14,7 @@ import cifar10_utils
 import cifar10_siamese_utils
 
 LEARNING_RATE_DEFAULT = 1e-4
-BATCH_SIZE_DEFAULT = 64
+BATCH_SIZE_DEFAULT = 128
 MAX_STEPS_DEFAULT = 15000
 EVAL_FREQ_DEFAULT = 1000
 CHECKPOINT_FREQ_DEFAULT = 5000
@@ -29,11 +29,6 @@ cifar10 = cifar10_utils.get_cifar10(DATA_DIR_DEFAULT)
 
 cifar10_siamese = cifar10_siamese_utils.get_cifar10(DATA_DIR_DEFAULT,
                                                      one_hot=False)
-
-val_set = cifar10_siamese_utils.create_dataset(cifar10_siamese,
-                                               num_tuples=600,
-                                               batch_size=BATCH_SIZE_DEFAULT,
-                                               fraction_same=0.2)
 
 def train_step(loss):
     """
@@ -193,6 +188,12 @@ def train_siamese():
     ########################
     # PUT YOUR CODE HERE  #
     ########################
+
+    val_set = cifar10_siamese_utils.create_dataset(cifar10_siamese,
+                                                   num_tuples=600,
+                                                   batch_size=BATCH_SIZE_DEFAULT,
+                                                   fraction_same=0.2)
+
     model = Siamese()
 
     x1 = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
@@ -212,12 +213,31 @@ def train_siamese():
     session = tf.Session()
     session.run(init)
 
+    tf.scalar_summary('loss', loss)
+    merged = tf.merge_all_summaries()
+
+    train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/train', session.graph)
+    test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/test', session.graph)
+
+    saver = tf.train.Saver(tf.all_variables())
+
     for iteration in range(1, MAX_STEPS_DEFAULT+1):
         batch_x1, batch_x2, batch_labels = cifar10_siamese.train.next_batch(BATCH_SIZE_DEFAULT)
-        __, l = session.run([train_step, loss], feed_dict={x1:batch_x1, x2:batch_x2, y_:batch_labels})
-        print(l)
+        __, summary, l = session.run([train_step, merged, loss], feed_dict={x1:batch_x1, x2:batch_x2, y_:batch_labels})
 
+        train_writer.add_summary(summary, iteration)
 
+        if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
+            saver.save(session, CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(iteration) + ".ckpt")
+
+        if iteration % 10 == 0.0:
+            avg_loss = 0.0
+            for i in range(len(val_set)):
+                batch_x1, batch_x2, batch_labels = val_set[i][0], val_set[i][1], val_set[i][2]
+                __, summary, l = session.run([train_step, merged, loss], feed_dict={x1: batch_x1, x2: batch_x2, y_: batch_labels})
+                avg_loss += l
+            avg_loss /= float(len(val_set))
+            print(iteration, avg_loss)
     ########################
     # END OF YOUR CODE    #
     ########################
