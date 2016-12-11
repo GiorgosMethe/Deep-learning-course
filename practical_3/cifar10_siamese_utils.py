@@ -188,8 +188,6 @@ def create_dataset(source_data, num_tuples = 500, batch_size = 128, fraction_sam
         x1 = np.array([source_data.train._images[index_x1] for i in range(batch_size)])
         x2 = source_data.train._images[index_x2_similar]
         x2 = np.vstack((x2, source_data.train._images[index_x2_opposite]))
-        assert [source_data.train._labels[index_x1] == source_data.train._labels[x] for x in index_x2_similar]
-        assert [source_data.train._labels[index_x1] != source_data.train._labels[x] for x in index_x2_opposite]
         labels = np.hstack((np.ones((n_correct)), np.zeros((batch_size - n_correct))))
         dset.append((x1, x2, labels))
     ########################
@@ -297,9 +295,7 @@ class DataSet(object):
 
       x1 = np.array([self._images[index_x1] for i in range(batch_size)])
       x2 = self._images[index_x2_similar]
-      assert [self._labels[index_x1] == self._labels[x] for x in index_x2_similar]
       x2 = np.vstack((x2, self._images[index_x2_opposite]))
-      assert [self._labels[index_x1] != self._labels[x] for x in index_x2_opposite]
       labels = np.hstack((np.ones((n_correct)), np.zeros((batch_size - n_correct))))
 
     ########################

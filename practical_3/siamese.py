@@ -91,7 +91,7 @@ class Siamese(object):
 
                 h_fc2 = tf.nn.relu(tf.matmul(h_fc1, w_fc2) + b_fc2, name="h_f_fc2")
 
-            l2_out = h_fc2
+            l2_out = tf.nn.l2_normalize(h_fc2, dim=1, name="l_2-norm")
             ########################
             # END OF YOUR CODE    #
             ########################

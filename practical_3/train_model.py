@@ -8,6 +8,8 @@ import os
 import tensorflow as tf
 import numpy as np
 from sklearn.manifold import TSNE
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from convnet import ConvNet
@@ -230,8 +232,6 @@ def train_siamese():
 
         train_writer.add_summary(summary, iteration)
 
-        print(iteration, l)
-
         if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
             saver.save(session, CHECKPOINT_DIR_DEFAULT + "/siamese-model-at-" + str(iteration) + ".ckpt")
 
@@ -269,57 +269,118 @@ def feature_extraction():
     # PUT YOUR CODE HERE  #
     ########################
     if FLAGS.train_model == 'linear':
-        model = ConvNet()
 
-        x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
-        y_ = tf.placeholder(tf.float32, shape=[None, 10])
+        with tf.device('/cpu:0'):
+            model = ConvNet()
 
-        x_ = model.inference(x)
+            x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+            y_ = tf.placeholder(tf.float32, shape=[None, 10])
 
-        features_flatten = tf.get_default_graph().get_tensor_by_name("ConvNet/flatten/h_f_flatten:0")
-        features_fc1 = tf.get_default_graph().get_tensor_by_name("ConvNet/fc1/h_f_fc1:0")
-        features_fc2 = tf.get_default_graph().get_tensor_by_name("ConvNet/fc2/h_f_fc2:0")
+            x_ = model.inference(x)
 
-        init = tf.initialize_all_variables()
-        session = tf.Session()
-        session.run(init)
+            features_flatten = tf.get_default_graph().get_tensor_by_name("ConvNet/flatten/h_f_flatten:0")
+            features_fc1 = tf.get_default_graph().get_tensor_by_name("ConvNet/fc1/h_f_fc1:0")
+            features_fc2 = tf.get_default_graph().get_tensor_by_name("ConvNet/fc2/h_f_fc2:0")
 
-        saver = tf.train.Saver(tf.all_variables())
-        saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
+            init = tf.initialize_all_variables()
+            session = tf.Session()
+            session.run(init)
 
-        batch_x, batch_y = cifar10.test.images[:1000], cifar10.test.labels[:1000]
-        x_, features_flatten, features_fc1, features_fc2 = session.run([x_, features_flatten, features_fc1, features_fc2],
-                                                                       feed_dict={x: batch_x, y_: batch_y})
+            saver = tf.train.Saver(tf.all_variables())
+            saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
 
-        tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-        tsne_result = tsne.fit_transform(features_flatten)
 
-        plt.figure()
-        colors = cm.rainbow(np.linspace(0, 1, len(batch_y[0])))
-        sizes = np.random.random_integers(25, 50, size=len(batch_y[0]))
-        for i in range(len(batch_y[0])):
-            index = np.where(np.argmax(batch_y, axis=1) == i)
-            plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
-        plt.legend(numpoints=1, fontsize=8)
-        plt.savefig("visualization-linear-features_flatten.pdf", bbox_inches = 'tight')
+            batch_x, batch_y = cifar10.test.images, cifar10.test.labels
+            x_, features_flatten, features_fc1, features_fc2 = session.run([x_, features_flatten, features_fc1, features_fc2], feed_dict={x: batch_x, y_: batch_y})
 
-        tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-        tsne_result = tsne.fit_transform(features_fc1)
-        plt.figure()
-        for i in range(len(batch_y[0])):
-            index = np.where(np.argmax(batch_y, axis=1) == i)
-            plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
-        plt.legend(numpoints=1, fontsize=8)
-        plt.savefig("visualization-linear-features_fc1.pdf", bbox_inches = 'tight')
+        '''
+        VISUALIZATION
+        '''
+        if 0:
+            tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+            tsne_result = tsne.fit_transform(features_flatten)
+            plt.figure()
+            colors = cm.rainbow(np.linspace(0, 1, len(batch_y[0])))
+            sizes = np.random.random_integers(25, 50, size=len(batch_y[0]))
+            for i in range(len(batch_y[0])):
+                index = np.where(np.argmax(batch_y, axis=1) == i)
+                plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
+            plt.legend(numpoints=1, fontsize=8)
+            plt.savefig("visualization-linear-features_flatten.pdf", bbox_inches = 'tight')
 
-        tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-        tsne_result = tsne.fit_transform(features_fc2)
-        plt.figure()
-        for i in range(len(batch_y[0])):
-            index = np.where(np.argmax(batch_y, axis=1) == i)
-            plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
-        plt.legend(numpoints=1, fontsize=8)
-        plt.savefig("visualization-linear-features_fc2.pdf", bbox_inches = 'tight')
+            tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+            tsne_result = tsne.fit_transform(features_fc1)
+            plt.figure()
+            for i in range(len(batch_y[0])):
+                index = np.where(np.argmax(batch_y, axis=1) == i)
+                plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
+            plt.legend(numpoints=1, fontsize=8)
+            plt.savefig("visualization-linear-features_fc1.pdf", bbox_inches = 'tight')
+
+            tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+            tsne_result = tsne.fit_transform(features_fc2)
+            plt.figure()
+            for i in range(len(batch_y[0])):
+                index = np.where(np.argmax(batch_y, axis=1) == i)
+                plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
+            plt.legend(numpoints=1, fontsize=8)
+            plt.savefig("visualization-linear-features_fc2.pdf", bbox_inches = 'tight')
+
+        '''
+        ONE-VS-REST CLASSIFIER
+        '''
+        if 0:
+            classif = OneVsRestClassifier(SVC(kernel='linear'))
+            classif.fit(features_flatten, cifar10.test.labels)
+
+    elif FLAGS.train_model == 'siamese':
+
+        with tf.device('/cpu:0'):
+
+            val_set = cifar10_siamese_utils.create_dataset(cifar10_siamese,
+                                                           num_tuples=600,
+                                                           batch_size=BATCH_SIZE_DEFAULT,
+                                                           fraction_same=0.2)
+
+            model = Siamese()
+
+            x1 = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+            x2 = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+            y_ = tf.placeholder(tf.float32, shape=[None, ])
+
+            x1_ = model.inference(x1, reuse=None)
+            x2_ = model.inference(x2, reuse=True)
+
+            features_flatten = tf.get_default_graph().get_tensor_by_name("ConvNet/flatten/h_f_flatten:0")
+            features_fc1 = tf.get_default_graph().get_tensor_by_name("ConvNet/fc1/h_f_fc1:0")
+            features_fc2 = tf.get_default_graph().get_tensor_by_name("ConvNet/fc2/h_f_fc2:0")
+
+            init = tf.initialize_all_variables()
+            session = tf.Session()
+            session.run(init)
+
+            saver = tf.train.Saver(tf.all_variables())
+            saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/siamese-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
+
+            batch_x1, batch_y = cifar10.test.images
+            [features_flatten, features_fc1, features_fc2] = session.run([features_flatten, features_fc1, features_fc2],
+                                             feed_dict={x1: batch_x1, x2: batch_x1, y_: batch_y})
+
+        '''
+            VISUALIZATION
+        '''
+        if 1:
+            tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+            tsne_result = tsne.fit_transform(features_flatten)
+            plt.figure()
+            for i in range(batch_y):
+                index = np.where(np.argmax(batch_y, axis=1) == i)
+                plt.scatter(tsne_result[index, 0], tsne_result[index, 1])
+            plt.savefig("visualization-siamese-features_flatten.pdf", bbox_inches='tight')
+
+        if 0:
+            classif = OneVsRestClassifier(SVC(kernel='linear'))
+            classif.fit(features_flatten, cifar10.test.labels)
 
 
     ########################
@@ -386,7 +447,7 @@ if __name__ == '__main__':
                       help='Checkpoint directory')
     parser.add_argument('--is_train', type = str, default = False,
                       help='Training or feature extraction')
-    parser.add_argument('--train_model', type = str, default = 'linear',
+    parser.add_argument('--train_model', type = str, default = 'siamese',
                       help='Type of model. Possible options: linear and siamese')
 
     FLAGS, unparsed = parser.parse_known_args()
