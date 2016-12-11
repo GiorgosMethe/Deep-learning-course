@@ -277,12 +277,14 @@ def feature_extraction():
         session = tf.Session()
         session.run(init)
 
-        new_saver = tf.train.import_meta_graph(CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt.meta")
-        new_saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
+        features = tf.get_collection(tf.GraphKeys.VARIABLES, "ConvNet/fc2/h_f_fc2")
+
+        new_saver = tf.train.import_meta_graph(CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt.meta")
+        new_saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
 
         batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
-        x_ = session.run(x_, feed_dict={x: batch_x, y_: batch_y})
-        print(x_)
+        features = session.run(features, feed_dict={x: batch_x, y_: batch_y})
+        print(features)
 
     ########################
     # END OF YOUR CODE    #
