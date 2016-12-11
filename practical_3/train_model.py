@@ -232,6 +232,8 @@ def train_siamese():
 
         train_writer.add_summary(summary, iteration)
 
+        print(iteration, l)
+
         if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
             saver.save(session, CHECKPOINT_DIR_DEFAULT + "/siamese-model-at-" + str(iteration) + ".ckpt")
 
@@ -288,7 +290,6 @@ def feature_extraction():
 
             saver = tf.train.Saver(tf.all_variables())
             saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
-
 
             batch_x, batch_y = cifar10.test.images, cifar10.test.labels
             x_, features_flatten, features_fc1, features_fc2 = session.run([x_, features_flatten, features_fc1, features_fc2], feed_dict={x: batch_x, y_: batch_y})
@@ -445,7 +446,7 @@ if __name__ == '__main__':
                       help='Summaries log directory')
     parser.add_argument('--checkpoint_dir', type = str, default = CHECKPOINT_DIR_DEFAULT,
                       help='Checkpoint directory')
-    parser.add_argument('--is_train', type = str, default = False,
+    parser.add_argument('--is_train', type = str, default = True,
                       help='Training or feature extraction')
     parser.add_argument('--train_model', type = str, default = 'siamese',
                       help='Type of model. Possible options: linear and siamese')

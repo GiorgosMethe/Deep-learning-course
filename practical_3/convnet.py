@@ -57,7 +57,8 @@ class ConvNet(object):
                                           shape=[5, 5, 3, 64],
                                           initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
 
-                b_conv1 = tf.Variable(tf.constant(0.0, shape=[64]), name='biases')
+                b_conv1 = tf.get_variable('biases', shape=[64], initializer=tf.constant_initializer(0.0))
+
 
                 h_conv1 = tf.nn.relu(tf.nn.conv2d(x, w_conv1, strides=[1, 1, 1, 1], padding='SAME') + b_conv1)
 
@@ -68,7 +69,7 @@ class ConvNet(object):
                                           shape=[5, 5, 64, 64],
                                           initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
 
-                b_conv2 = tf.Variable(tf.constant(0.0, shape=[64]), name='biases')
+                b_conv2 = tf.get_variable('biases', shape=[64], initializer=tf.constant_initializer(0.0))
 
                 h_conv2 = tf.nn.relu(tf.nn.conv2d(h_pool1, w_conv2, strides=[1, 1, 1, 1], padding='SAME') + b_conv2)
 
@@ -85,7 +86,7 @@ class ConvNet(object):
                                         shape=[flatten.get_shape()[1], 384],
                                         initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
 
-                b_fc1 = tf.Variable(tf.constant(0.0, shape=[384]), name='biases')
+                b_fc1 = tf.get_variable('biases', shape=[384], initializer=tf.constant_initializer(0.0))
 
                 h_fc1 = tf.nn.relu(tf.matmul(flatten, w_fc1) + b_fc1, name="h_f_fc1")
 
@@ -94,7 +95,7 @@ class ConvNet(object):
                                         shape=[384, 192],
                                         initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
 
-                b_fc2 = tf.Variable(tf.constant(0.0, shape=[192]), name='biases')
+                b_fc2 = tf.get_variable('biases', shape=[192], initializer=tf.constant_initializer(0.0))
 
                 h_fc2 = tf.nn.relu(tf.matmul(h_fc1, w_fc2) + b_fc2, name="h_f_fc2")
 
@@ -103,7 +104,7 @@ class ConvNet(object):
                                         shape=[192, 10],
                                         initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
 
-                b_fc3 = tf.Variable(tf.constant(0.0, shape=[10]), name='biases')
+                b_fc3 = tf.get_variable('biases', shape=[10], initializer=tf.constant_initializer(0.0))
 
             logits = tf.matmul(h_fc2, w_fc3) + b_fc3
 
