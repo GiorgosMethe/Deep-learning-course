@@ -115,8 +115,8 @@ def train():
     tf.histogram_summary('logits', x_)
     merged = tf.merge_all_summaries()
 
-    train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/train', session.graph)
-    test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/test', session.graph)
+    train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/linear-train', session.graph)
+    test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/linear-test', session.graph)
 
     saver = tf.train.Saver(tf.all_variables())
 
@@ -126,9 +126,9 @@ def train():
         train_writer.add_summary(summary, iteration)
 
         if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
-            saver.save(session, CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(iteration) + ".ckpt")
+            saver.save(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(iteration) + ".ckpt")
 
-        if iteration % 1000 == 0.0:
+        if iteration % EVAL_FREQ_DEFAULT == 0.0:
             _split = 250
             avg_loss, avg_acc = 0.0, 0.0
             for _iter in range(int(len(cifar10.test.images) / _split)):
@@ -138,8 +138,8 @@ def train():
                 __, summary, l, acc = session.run([train_step, merged, loss, accuracy], feed_dict={x: batch_x, y_: batch_y})
                 avg_loss += l
                 avg_acc += acc
-            avg_loss /= float(len(cifar10.test.images) / _split)
-            avg_acc /= float(len(cifar10.test.images) / _split)
+            avg_loss /= float(len(cifar10.test.images)) / float(_split)
+            avg_acc /= float(len(cifar10.test.images)) / float(_split)
             print(iteration, avg_loss, avg_acc)
             test_writer.add_summary(summary, iteration)
     ########################
@@ -204,7 +204,7 @@ def train_siamese():
     x2_ = model.inference(x2, reuse=True)
 
     with tf.name_scope('loss'):
-        loss = model.loss(x1_, x2_, y_, 0.2)
+        loss = model.loss(x1_, x2_, y_, margin=1.0)
 
     with tf.name_scope('train'):
         train_step = tf.train.AdamOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
@@ -216,8 +216,8 @@ def train_siamese():
     tf.scalar_summary('loss', loss)
     merged = tf.merge_all_summaries()
 
-    train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/train', session.graph)
-    test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/test', session.graph)
+    train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/siamese-train', session.graph)
+    test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/siamese-test', session.graph)
 
     saver = tf.train.Saver(tf.all_variables())
 
@@ -227,10 +227,12 @@ def train_siamese():
 
         train_writer.add_summary(summary, iteration)
 
-        if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
-            saver.save(session, CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(iteration) + ".ckpt")
+        print(iteration, l)
 
-        if iteration % 10 == 0.0:
+        if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
+            saver.save(session, CHECKPOINT_DIR_DEFAULT + "/siamese-model-at-" + str(iteration) + ".ckpt")
+
+        if iteration % EVAL_FREQ_DEFAULT == 0.0:
             avg_loss = 0.0
             for i in range(len(val_set)):
                 batch_x1, batch_x2, batch_labels = val_set[i][0], val_set[i][1], val_set[i][2]
@@ -238,6 +240,8 @@ def train_siamese():
                 avg_loss += l
             avg_loss /= float(len(val_set))
             print(iteration, avg_loss)
+            test_writer.add_summary(summary, iteration)
+
     ########################
     # END OF YOUR CODE    #
     ########################
@@ -261,23 +265,24 @@ def feature_extraction():
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    model = ConvNet()
+    if FLAGS.train_model == 'linear':
+        model = ConvNet()
 
-    x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
-    y_ = tf.placeholder(tf.float32, shape=[None, 10])
+        x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+        y_ = tf.placeholder(tf.float32, shape=[None, 10])
 
-    x_ = model.inference(x)
+        x_ = model.inference(x)
 
-    init = tf.initialize_all_variables()
-    session = tf.Session()
-    session.run(init)
+        init = tf.initialize_all_variables()
+        session = tf.Session()
+        session.run(init)
 
-    new_saver = tf.train.import_meta_graph(CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt.meta")
-    new_saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
+        new_saver = tf.train.import_meta_graph(CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt.meta")
+        new_saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
 
-    batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
-    x_ = session.run(x_, feed_dict={x: batch_x, y_: batch_y})
-    print(x_)
+        batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
+        x_ = session.run(x_, feed_dict={x: batch_x, y_: batch_y})
+        print(x_)
 
     ########################
     # END OF YOUR CODE    #
@@ -341,9 +346,9 @@ if __name__ == '__main__':
                       help='Summaries log directory')
     parser.add_argument('--checkpoint_dir', type = str, default = CHECKPOINT_DIR_DEFAULT,
                       help='Checkpoint directory')
-    parser.add_argument('--is_train', type = str, default = True,
+    parser.add_argument('--is_train', type = str, default = False,
                       help='Training or feature extraction')
-    parser.add_argument('--train_model', type = str, default = 'siamese',
+    parser.add_argument('--train_model', type = str, default = 'linear',
                       help='Type of model. Possible options: linear and siamese')
 
     FLAGS, unparsed = parser.parse_known_args()

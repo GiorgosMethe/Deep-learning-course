@@ -159,18 +159,41 @@ def create_dataset(source_data, num_tuples = 500, batch_size = 128, fraction_sam
     ########################
     dset = []
     for sample_tuple in range(num_tuples):
-      n_correct = int(fraction_same * batch_size)
-      random_index = np.array(np.random.choice(range(int(source_data.train._images.shape[0] * 0.8),
-                                                     source_data.train._images.shape[0]), replace=False, size=batch_size))
-      matches = [np.random.choice(np.array(np.where(source_data.train._labels == source_data.train._labels[x]))[0]) for x in random_index]
-      mismatches = [np.random.choice(np.array(np.where(source_data.train._labels != source_data.train._labels[x]))[0]) for x in random_index]
-      x1 = source_data.train._images[random_index]
-      x2 = source_data.train._images[matches[:n_correct]]
-      x2 = np.vstack((x2, source_data.train._images[mismatches[n_correct:]]))
-      labels = np.hstack((np.ones((n_correct)), np.zeros((batch_size - n_correct))))
-      dset.append((x1,x2,labels))
+      if 0:
+        n_correct = int(fraction_same * batch_size)
+        random_index = np.array(np.random.choice(range(int(source_data.train._images.shape[0] * 0.8),
+                                                       source_data.train._images.shape[0]), replace=False, size=batch_size))
+        matches = [np.random.choice(np.array(np.where(source_data.train._labels == source_data.train._labels[x]))[0]) for x in random_index]
+        mismatches = [np.random.choice(np.array(np.where(source_data.train._labels != source_data.train._labels[x]))[0]) for x in random_index]
+        x1 = source_data.train._images[random_index]
+        x2 = source_data.train._images[matches[:n_correct]]
+        x2 = np.vstack((x2, source_data.train._images[mismatches[n_correct:]]))
+        labels = np.hstack((np.ones((n_correct)), np.zeros((batch_size - n_correct))))
+        dset.append((x1, x2, labels))
+      else:
+        n_correct = int(fraction_same * batch_size)
+        val_set_indexes = range(int(source_data.train._images.shape[0] * 0.8), source_data.train._images.shape[0])
+
+        index_x1 = np.random.choice(val_set_indexes)
+        label_x1 = source_data.train._labels[index_x1]
+
+        index_x2_similar = np.random.choice(val_set_indexes[0] +
+                                            np.where(source_data.train._labels[val_set_indexes] == label_x1)[0],
+                                            replace=False, size=n_correct)
+
+        index_x2_opposite = np.random.choice(val_set_indexes[0] +
+                                             np.where(source_data.train._labels[val_set_indexes] != label_x1)[0],
+                                             replace=False, size=(batch_size-n_correct))
+
+        x1 = np.array([source_data.train._images[index_x1] for i in range(batch_size)])
+        x2 = source_data.train._images[index_x2_similar]
+        x2 = np.vstack((x2, source_data.train._images[index_x2_opposite]))
+        assert [source_data.train._labels[index_x1] == source_data.train._labels[x] for x in index_x2_similar]
+        assert [source_data.train._labels[index_x1] != source_data.train._labels[x] for x in index_x2_opposite]
+        labels = np.hstack((np.ones((n_correct)), np.zeros((batch_size - n_correct))))
+        dset.append((x1, x2, labels))
     ########################
-    # END OF YOUR CODE    #
+    # END OF YOUR CODE    #m
     ########################
     return dset
 
@@ -248,14 +271,37 @@ class DataSet(object):
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    n_correct = int(fraction_same * batch_size)
-    random_index = np.array(np.random.choice(range(int(self._images.shape[0] * 0.8)), replace=False, size=batch_size))
-    matches = [np.random.choice(np.array(np.where(self._labels == self._labels[x]))[0]) for x in random_index]
-    mismatches = [np.random.choice(np.array(np.where(self._labels != self._labels[x]))[0]) for x in random_index]
-    x1 = self._images[random_index]
-    x2 = self._images[matches[:n_correct]]
-    x2 = np.vstack((x2, self._images[mismatches[n_correct:]]))
-    labels = np.hstack((np.ones((n_correct)), np.zeros((batch_size-n_correct))))
+    if 0:
+      n_correct = int(fraction_same * batch_size)
+      random_index = np.array(np.random.choice(range(int(self._images.shape[0] * 0.8)), replace=False, size=batch_size))
+      matches = [np.random.choice(np.array(np.where(self._labels == self._labels[x]))[0]) for x in random_index]
+      mismatches = [np.random.choice(np.array(np.where(self._labels != self._labels[x]))[0]) for x in random_index]
+      x1 = self._images[random_index]
+      x2 = self._images[matches[:n_correct]]
+      x2 = np.vstack((x2, self._images[mismatches[n_correct:]]))
+      labels = np.hstack((np.ones((n_correct)), np.zeros((batch_size-n_correct))))
+    else:
+      n_correct = int(fraction_same * batch_size)
+      val_set_indexes = range(int(self._images.shape[0] * 0.8))
+
+      index_x1 = np.random.choice(val_set_indexes)
+      label_x1 = self._labels[index_x1]
+
+      index_x2_similar = np.random.choice(val_set_indexes[0] +
+                                          np.where(self._labels[val_set_indexes] == label_x1)[0],
+                                          replace=False, size=n_correct)
+
+      index_x2_opposite = np.random.choice(val_set_indexes[0] +
+                                           np.where(self._labels[val_set_indexes] != label_x1)[0],
+                                           replace=False, size=(batch_size - n_correct))
+
+      x1 = np.array([self._images[index_x1] for i in range(batch_size)])
+      x2 = self._images[index_x2_similar]
+      assert [self._labels[index_x1] == self._labels[x] for x in index_x2_similar]
+      x2 = np.vstack((x2, self._images[index_x2_opposite]))
+      assert [self._labels[index_x1] != self._labels[x] for x in index_x2_opposite]
+      labels = np.hstack((np.ones((n_correct)), np.zeros((batch_size - n_correct))))
+
     ########################
     # END OF YOUR CODE    #
     ########################
