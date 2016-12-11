@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Arch Linux) (preloaded format=pdflatex 2016.11.28)  5 DEC 2016 11:32
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Arch Linux) (preloaded format=pdflatex 2016.11.28)  11 DEC 2016 14:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -835,7 +835,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 129.
 Here is how much of TeX's memory you used:
  8219 strings out of 493013
  122815 string characters out of 6139316
- 244385 words of memory out of 5000000
+ 244382 words of memory out of 5000000
  11611 multiletter control sequences out of 15000+600000
  24530 words of font info for 51 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -846,7 +846,7 @@ ts/enc/dvips/cm-super/cm-super-t1.enc}</usr/share/texmf-dist/fonts/type1/public
 mr10.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/
 share/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-dist/fonts/
 type1/urw/times/utmr8a.pfb>
-Output written on report_methenitis.pdf (2 pages, 193491 bytes).
+Output written on report_methenitis.pdf (2 pages, 186922 bytes).
 PDF statistics:
  87 PDF objects out of 1000 (max. 8388607)
  61 compressed objects within 1 object stream
