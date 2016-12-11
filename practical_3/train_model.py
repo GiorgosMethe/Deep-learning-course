@@ -276,21 +276,23 @@ def feature_extraction():
 
         x_ = model.inference(x)
 
-        features = tf.get_default_graph().get_tensor_by_name("ConvNet/flatten/h_f_flatten:0")
+        features_flatten = tf.get_default_graph().get_tensor_by_name("ConvNet/flatten/h_f_flatten:0")
+        features_fc1 = tf.get_default_graph().get_tensor_by_name("ConvNet/fc1/h_f_fc1:0")
+        features_fc2 = tf.get_default_graph().get_tensor_by_name("ConvNet/fc2/h_f_fc2:0")
 
         init = tf.initialize_all_variables()
         session = tf.Session()
         session.run(init)
 
-        new_saver = tf.train.import_meta_graph(CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt.meta")
-        new_saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
+        saver = tf.train.Saver(tf.all_variables())
+        saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
 
         batch_x, batch_y = cifar10.test.images[:1000], cifar10.test.labels[:1000]
-        x_, features = session.run([x_, features], feed_dict={x: batch_x, y_: batch_y})
+        x_, features_flatten, features_fc1, features_fc2 = session.run([x_, features_flatten, features_fc1, features_fc2],
+                                                                       feed_dict={x: batch_x, y_: batch_y})
 
         tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-        tsne_result = tsne.fit_transform(features)
-
+        tsne_result = tsne.fit_transform(features_flatten)
 
         plt.figure()
         colors = cm.rainbow(np.linspace(0, 1, len(batch_y[0])))
@@ -299,9 +301,25 @@ def feature_extraction():
             index = np.where(np.argmax(batch_y, axis=1) == i)
             plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
         plt.legend(numpoints=1, fontsize=8)
-        plt.show()
+        plt.savefig("visualization-linear-features_flatten.pdf", bbox_inches = 'tight')
 
+        tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+        tsne_result = tsne.fit_transform(features_fc1)
+        plt.figure()
+        for i in range(len(batch_y[0])):
+            index = np.where(np.argmax(batch_y, axis=1) == i)
+            plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
+        plt.legend(numpoints=1, fontsize=8)
+        plt.savefig("visualization-linear-features_fc1.pdf", bbox_inches = 'tight')
 
+        tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+        tsne_result = tsne.fit_transform(features_fc2)
+        plt.figure()
+        for i in range(len(batch_y[0])):
+            index = np.where(np.argmax(batch_y, axis=1) == i)
+            plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
+        plt.legend(numpoints=1, fontsize=8)
+        plt.savefig("visualization-linear-features_fc2.pdf", bbox_inches = 'tight')
 
 
     ########################
