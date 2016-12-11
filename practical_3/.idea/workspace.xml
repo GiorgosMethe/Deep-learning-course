@@ -18,8 +18,8 @@
       <file leaf-file-name="convnet.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/convnet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="542">
-              <caret line="98" column="81" lean-forward="false" selection-start-line="98" selection-start-column="74" selection-end-line="98" selection-end-column="81" />
+            <state relative-caret-position="434">
+              <caret line="98" column="83" lean-forward="true" selection-start-line="98" selection-start-column="16" selection-end-line="98" selection-end-column="83" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -52,8 +52,8 @@
       <file leaf-file-name="train_model.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/train_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="346">
-              <caret line="279" column="83" lean-forward="true" selection-start-line="279" selection-start-column="83" selection-end-line="279" selection-end-column="83" />
+            <state relative-caret-position="382">
+              <caret line="275" column="101" lean-forward="false" selection-start-line="275" selection-start-column="101" selection-end-line="275" selection-end-column="101" />
               <folding />
             </state>
           </provider>
@@ -724,6 +724,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/convnet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="434">
+          <caret line="98" column="83" lean-forward="true" selection-start-line="98" selection-start-column="16" selection-end-line="98" selection-end-column="83" />
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/siamese.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1170">
@@ -734,20 +744,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/convnet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="542">
-          <caret line="98" column="81" lean-forward="false" selection-start-line="98" selection-start-column="74" selection-end-line="98" selection-end-column="81" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/train_model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="346">
-          <caret line="279" column="83" lean-forward="true" selection-start-line="279" selection-start-column="83" selection-end-line="279" selection-end-column="83" />
+        <state relative-caret-position="382">
+          <caret line="275" column="101" lean-forward="false" selection-start-line="275" selection-start-column="101" selection-end-line="275" selection-end-column="101" />
           <folding />
         </state>
       </provider>
