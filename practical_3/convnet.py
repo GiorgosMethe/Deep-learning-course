@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+from tensorflow.contrib.layers import initializers
+from tensorflow.contrib.layers import regularizers
 
 class ConvNet(object):
     """
@@ -55,10 +57,10 @@ class ConvNet(object):
             with tf.variable_scope('conv1') as scope:
                 w_conv1 = tf.get_variable('weights',
                                           shape=[5, 5, 3, 64],
-                                          initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+                                          initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001),
+                                          regularizer=regularizers.l2_regularizer(0.001))
 
                 b_conv1 = tf.get_variable('biases', shape=[64], initializer=tf.constant_initializer(0.0))
-
 
                 h_conv1 = tf.nn.relu(tf.nn.conv2d(x, w_conv1, strides=[1, 1, 1, 1], padding='SAME') + b_conv1)
 
@@ -67,7 +69,8 @@ class ConvNet(object):
             with tf.variable_scope('conv2') as scope:
                 w_conv2 = tf.get_variable('weights',
                                           shape=[5, 5, 64, 64],
-                                          initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+                                          initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001),
+                                          regularizer=regularizers.l2_regularizer(0.001))
 
                 b_conv2 = tf.get_variable('biases', shape=[64], initializer=tf.constant_initializer(0.0))
 
@@ -84,7 +87,8 @@ class ConvNet(object):
             with tf.variable_scope('fc1') as scope:
                 w_fc1 = tf.get_variable('weights',
                                         shape=[flatten.get_shape()[1], 384],
-                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001),
+                                        regularizer=regularizers.l2_regularizer(0.001))
 
                 b_fc1 = tf.get_variable('biases', shape=[384], initializer=tf.constant_initializer(0.0))
 
@@ -93,7 +97,8 @@ class ConvNet(object):
             with tf.variable_scope('fc2') as scope:
                 w_fc2 = tf.get_variable('weights',
                                         shape=[384, 192],
-                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001),
+                                        regularizer=regularizers.l2_regularizer(0.001))
 
                 b_fc2 = tf.get_variable('biases', shape=[192], initializer=tf.constant_initializer(0.0))
 
@@ -102,7 +107,8 @@ class ConvNet(object):
             with tf.variable_scope('fc3') as scope:
                 w_fc3 = tf.get_variable('weights',
                                         shape=[192, 10],
-                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001),
+                                        regularizer=regularizers.l2_regularizer(0.001))
 
                 b_fc3 = tf.get_variable('biases', shape=[10], initializer=tf.constant_initializer(0.0))
 
@@ -167,12 +173,10 @@ class ConvNet(object):
         ########################
         labels = tf.cast(labels, tf.float32)
         cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits, labels, name='cross_entropy')
-        cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy_mean')
+        loss = tf.reduce_mean(cross_entropy, name='cross_entropy_mean')
 
-        reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
-        reg_loss = tf.reduce_sum(reg_losses)
-
-        loss = cross_entropy_mean + reg_loss
+        # reg_loss = tf.reduce_sum(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+        # loss += reg_loss
         ########################
         # END OF YOUR CODE     #
         ########################

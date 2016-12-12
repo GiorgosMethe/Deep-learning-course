@@ -21,7 +21,7 @@ import cifar10_siamese_utils
 LEARNING_RATE_DEFAULT = 1e-4
 BATCH_SIZE_DEFAULT = 128
 MAX_STEPS_DEFAULT = 15000
-EVAL_FREQ_DEFAULT = 1000
+EVAL_FREQ_DEFAULT = 15000
 CHECKPOINT_FREQ_DEFAULT = 5000
 PRINT_FREQ_DEFAULT = 10
 OPTIMIZER_DEFAULT = 'ADAM'
@@ -209,7 +209,7 @@ def train_siamese():
     x2_ = model.inference(x2, reuse=True)
 
     with tf.name_scope('loss'):
-        loss = model.loss(x1_, x2_, y_, margin=1.0)
+        loss = model.loss(x1_, x2_, y_, margin=0.2)
 
     with tf.name_scope('train'):
         train_step = tf.train.AdamOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
@@ -291,7 +291,7 @@ def feature_extraction():
             saver = tf.train.Saver(tf.all_variables())
             saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
 
-            batch_x, batch_y = cifar10.test.images, cifar10.test.labels
+            batch_x, batch_y = cifar10.test.images[:1000], cifar10.test.labels[:1000]
             x_, features_flatten, features_fc1, features_fc2 = session.run([x_, features_flatten, features_fc1, features_fc2], feed_dict={x: batch_x, y_: batch_y})
 
         '''
@@ -305,56 +305,65 @@ def feature_extraction():
             sizes = np.random.random_integers(25, 50, size=len(batch_y[0]))
             for i in range(len(batch_y[0])):
                 index = np.where(np.argmax(batch_y, axis=1) == i)
-                plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
+                plt.scatter(tsne_result[index,0], tsne_result[index, 1], c=colors[i], s=sizes[i], label=i)
             plt.legend(numpoints=1, fontsize=8)
-            plt.savefig("visualization-linear-features_flatten.pdf", bbox_inches = 'tight')
+            # plt.savefig("visualization-linear-features_flatten.pdf", bbox_inches = 'tight')
+            # plt.show()
 
             tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
             tsne_result = tsne.fit_transform(features_fc1)
             plt.figure()
             for i in range(len(batch_y[0])):
                 index = np.where(np.argmax(batch_y, axis=1) == i)
-                plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
+                plt.scatter(tsne_result[index,0], tsne_result[index, 1], c=colors[i], s=sizes[i], label=i)
             plt.legend(numpoints=1, fontsize=8)
-            plt.savefig("visualization-linear-features_fc1.pdf", bbox_inches = 'tight')
+            # plt.savefig("visualization-linear-features_fc1.pdf", bbox_inches = 'tight')
+            # plt.show()
 
             tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
             tsne_result = tsne.fit_transform(features_fc2)
             plt.figure()
             for i in range(len(batch_y[0])):
                 index = np.where(np.argmax(batch_y, axis=1) == i)
-                plt.scatter(tsne_result[index,0], tsne_result[index,1], c=colors[i], s=sizes[i], label=i)
+                plt.scatter(tsne_result[index,0], tsne_result[index, 1], c=colors[i], s=sizes[i], label=i)
             plt.legend(numpoints=1, fontsize=8)
-            plt.savefig("visualization-linear-features_fc2.pdf", bbox_inches = 'tight')
+            # plt.savefig("visualization-linear-features_fc2.pdf", bbox_inches = 'tight')
+            # plt.show()
 
         '''
         ONE-VS-REST CLASSIFIER
         '''
-        if 0:
+        if 1:
+            train_set = range(int(features_flatten.shape[0]*0.8))
+            test_set = range(train_set[0], features_flatten.shape[0])
             classif = OneVsRestClassifier(SVC(kernel='linear'))
-            classif.fit(features_flatten, cifar10.test.labels)
+            classif.fit(features_flatten[train_set], np.argmax(batch_y[train_set], axis=1))
+            print("Accuracy with flatten:", classif.score(features_flatten[test_set], np.argmax(batch_y[test_set], axis=1)))
+
+            classif = OneVsRestClassifier(SVC(kernel='linear'))
+            classif.fit(features_fc1[train_set], np.argmax(batch_y[train_set], axis=1))
+            print("Accuracy with features_fc1:",
+                  classif.score(features_fc1[test_set], np.argmax(batch_y[test_set], axis=1)))
+
+            classif = OneVsRestClassifier(SVC(kernel='linear'))
+            classif.fit(features_fc2[train_set], np.argmax(batch_y[train_set], axis=1))
+            print("Accuracy with features_fc2:",
+                  classif.score(features_fc2[test_set], np.argmax(batch_y[test_set], axis=1)))
+
+
+
 
     elif FLAGS.train_model == 'siamese':
 
         with tf.device('/cpu:0'):
 
-            val_set = cifar10_siamese_utils.create_dataset(cifar10_siamese,
-                                                           num_tuples=600,
-                                                           batch_size=BATCH_SIZE_DEFAULT,
-                                                           fraction_same=0.2)
-
             model = Siamese()
 
             x1 = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
-            x2 = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
-            y_ = tf.placeholder(tf.float32, shape=[None, ])
 
             x1_ = model.inference(x1, reuse=None)
-            x2_ = model.inference(x2, reuse=True)
 
-            features_flatten = tf.get_default_graph().get_tensor_by_name("ConvNet/flatten/h_f_flatten:0")
-            features_fc1 = tf.get_default_graph().get_tensor_by_name("ConvNet/fc1/h_f_fc1:0")
-            features_fc2 = tf.get_default_graph().get_tensor_by_name("ConvNet/fc2/h_f_fc2:0")
+            features = tf.get_default_graph().get_tensor_by_name("ConvNet/l_2-norm:0")
 
             init = tf.initialize_all_variables()
             session = tf.Session()
@@ -363,25 +372,33 @@ def feature_extraction():
             saver = tf.train.Saver(tf.all_variables())
             saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/siamese-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
 
-            batch_x1, batch_y = cifar10.test.images
-            [features_flatten, features_fc1, features_fc2] = session.run([features_flatten, features_fc1, features_fc2],
-                                             feed_dict={x1: batch_x1, x2: batch_x1, y_: batch_y})
+            batch_x1, batch_y = cifar10.test.images[:1000], np.argmax(cifar10.test.labels[:1000], axis=1)
+
+            features = session.run(features, feed_dict={x1: batch_x1})
 
         '''
             VISUALIZATION
         '''
-        if 1:
-            tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-            tsne_result = tsne.fit_transform(features_flatten)
-            plt.figure()
-            for i in range(batch_y):
-                index = np.where(np.argmax(batch_y, axis=1) == i)
-                plt.scatter(tsne_result[index, 0], tsne_result[index, 1])
-            plt.savefig("visualization-siamese-features_flatten.pdf", bbox_inches='tight')
-
         if 0:
+            tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+            tsne_result = tsne.fit_transform(features)
+            plt.figure()
+            colors = cm.rainbow(np.linspace(0, 1, 10))
+            sizes = np.random.random_integers(25, 50, size=10)
+            for i in range(10):
+                index = np.where(batch_y == i)
+                plt.scatter(tsne_result[index, 1], tsne_result[index, 0], c=colors[i], s=sizes[i], label=i)
+            plt.legend(numpoints=1, fontsize=8)
+            plt.savefig("visualization-siamese-features_fc2.pdf", bbox_inches='tight')
+            plt.show()
+
+        if 1:
+            train_set = range(int(features.shape[0] * 0.8))
+            test_set = range(train_set[0], features.shape[0])
             classif = OneVsRestClassifier(SVC(kernel='linear'))
-            classif.fit(features_flatten, cifar10.test.labels)
+            classif.fit(features[train_set], batch_y[train_set])
+            print("Accuracy with flatten:",
+                  classif.score(features[test_set], batch_y[test_set]))
 
 
     ########################
@@ -446,7 +463,7 @@ if __name__ == '__main__':
                       help='Summaries log directory')
     parser.add_argument('--checkpoint_dir', type = str, default = CHECKPOINT_DIR_DEFAULT,
                       help='Checkpoint directory')
-    parser.add_argument('--is_train', type = str, default = True,
+    parser.add_argument('--is_train', type = str, default = False,
                       help='Training or feature extraction')
     parser.add_argument('--train_model', type = str, default = 'siamese',
                       help='Type of model. Possible options: linear and siamese')

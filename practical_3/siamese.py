@@ -5,7 +5,8 @@ from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 
-
+from tensorflow.contrib.layers import initializers
+from tensorflow.contrib.layers import regularizers
 
 class Siamese(object):
     """
@@ -48,7 +49,8 @@ class Siamese(object):
             with tf.variable_scope('conv1', reuse=reuse) as scope:
                 w_conv1 = tf.get_variable('weights',
                                           shape=[5, 5, 3, 64],
-                                          initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+                                          initializer=initializers.xavier_initializer(),
+                                          regularizer=regularizers.l2_regularizer(0.001))
 
                 b_conv1 = tf.get_variable('biases', shape=[64], initializer=tf.constant_initializer(0.0))
 
@@ -59,7 +61,8 @@ class Siamese(object):
             with tf.variable_scope('conv2', reuse=reuse) as scope:
                 w_conv2 = tf.get_variable('weights',
                                           shape=[5, 5, 64, 64],
-                                          initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+                                          initializer=initializers.xavier_initializer(),
+                                          regularizer=regularizers.l2_regularizer(0.001))
 
                 b_conv2 = tf.get_variable('biases', shape=[64], initializer=tf.constant_initializer(0.0))
 
@@ -76,7 +79,8 @@ class Siamese(object):
             with tf.variable_scope('fc1', reuse=reuse) as scope:
                 w_fc1 = tf.get_variable('weights',
                                         shape=[flatten.get_shape()[1], 384],
-                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+                                        initializer=initializers.xavier_initializer(),
+                                        regularizer=regularizers.l2_regularizer(0.001))
 
                 b_fc1 = tf.get_variable('biases', shape=[384], initializer=tf.constant_initializer(0.0))
 
@@ -85,13 +89,14 @@ class Siamese(object):
             with tf.variable_scope('fc2', reuse=reuse) as scope:
                 w_fc2 = tf.get_variable('weights',
                                         shape=[384, 192],
-                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+                                        initializer=initializers.xavier_initializer(),
+                                        regularizer=regularizers.l2_regularizer(0.001))
 
                 b_fc2 = tf.get_variable('biases', shape=[192], initializer=tf.constant_initializer(0.0))
 
                 h_fc2 = tf.nn.relu(tf.matmul(h_fc1, w_fc2) + b_fc2, name="h_f_fc2")
 
-            l2_out = tf.nn.l2_normalize(h_fc2, dim=1, name="l_2-norm")
+            l2_out = tf.nn.l2_normalize(h_fc2, dim=0, name="l_2-norm")
             ########################
             # END OF YOUR CODE    #
             ########################
@@ -130,7 +135,10 @@ class Siamese(object):
         ########################
         l2_dist = tf.sqrt(tf.reduce_sum(tf.square(channel_1 - channel_2)))
         contrast = tf.maximum(0.0, margin - l2_dist)
-        loss = tf.reduce_sum(label * l2_dist + (1.0 - label) * contrast)
+        loss = tf.reduce_mean(label * l2_dist + (1.0 - label) * contrast)
+
+        # reg_loss = tf.reduce_sum(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+        # loss += reg_loss
         ########################
         # END OF YOUR CODE    #
         ########################
