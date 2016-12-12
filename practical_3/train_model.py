@@ -21,7 +21,7 @@ import cifar10_siamese_utils
 LEARNING_RATE_DEFAULT = 1e-4
 BATCH_SIZE_DEFAULT = 128
 MAX_STEPS_DEFAULT = 15000
-EVAL_FREQ_DEFAULT = 15000
+EVAL_FREQ_DEFAULT = 1000
 CHECKPOINT_FREQ_DEFAULT = 5000
 PRINT_FREQ_DEFAULT = 10
 OPTIMIZER_DEFAULT = 'ADAM'
@@ -397,7 +397,7 @@ def feature_extraction():
             test_set = range(train_set[0], features.shape[0])
             classif = OneVsRestClassifier(SVC(kernel='linear'))
             classif.fit(features[train_set], batch_y[train_set])
-            print("Accuracy with flatten:",
+            print("Accuracy with l_2-norm:",
                   classif.score(features[test_set], batch_y[test_set]))
 
 
@@ -463,7 +463,7 @@ if __name__ == '__main__':
                       help='Summaries log directory')
     parser.add_argument('--checkpoint_dir', type = str, default = CHECKPOINT_DIR_DEFAULT,
                       help='Checkpoint directory')
-    parser.add_argument('--is_train', type = str, default = False,
+    parser.add_argument('--is_train', type = str, default = True,
                       help='Training or feature extraction')
     parser.add_argument('--train_model', type = str, default = 'siamese',
                       help='Type of model. Possible options: linear and siamese')

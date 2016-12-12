@@ -18,8 +18,8 @@
       <file leaf-file-name="convnet.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/convnet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="760">
-              <caret line="177" column="8" lean-forward="true" selection-start-line="177" selection-start-column="8" selection-end-line="177" selection-end-column="8" />
+            <state relative-caret-position="414">
+              <caret line="71" column="107" lean-forward="false" selection-start-line="71" selection-start-column="42" selection-end-line="71" selection-end-column="107" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -30,8 +30,8 @@
       <file leaf-file-name="train_model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="760">
-              <caret line="467" column="71" lean-forward="false" selection-start-line="467" selection-start-column="71" selection-end-line="467" selection-end-column="71" />
+            <state relative-caret-position="724">
+              <caret line="465" column="64" lean-forward="false" selection-start-line="465" selection-start-column="64" selection-end-line="465" selection-end-column="64" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -42,8 +42,8 @@
       <file leaf-file-name="siamese.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/siamese.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="562">
-              <caret line="128" column="0" lean-forward="true" selection-start-line="128" selection-start-column="0" selection-end-line="128" selection-end-column="0" />
+            <state relative-caret-position="2394">
+              <caret line="133" column="31" lean-forward="false" selection-start-line="133" selection-start-column="31" selection-end-line="133" selection-end-column="31" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -72,8 +72,8 @@
         <option value="$PROJECT_DIR$/Untitled.ipynb" />
         <option value="$PROJECT_DIR$/convnet.py" />
         <option value="$PROJECT_DIR$/cifar10_siamese_utils.py" />
-        <option value="$PROJECT_DIR$/siamese.py" />
         <option value="$PROJECT_DIR$/train_model.py" />
+        <option value="$PROJECT_DIR$/siamese.py" />
       </list>
     </option>
   </component>
@@ -710,8 +710,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/convnet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="760">
-          <caret line="177" column="8" lean-forward="true" selection-start-line="177" selection-start-column="8" selection-end-line="177" selection-end-column="8" />
+        <state relative-caret-position="414">
+          <caret line="71" column="107" lean-forward="false" selection-start-line="71" selection-start-column="42" selection-end-line="71" selection-end-column="107" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
@@ -720,8 +720,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/train_model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="760">
-          <caret line="467" column="71" lean-forward="false" selection-start-line="467" selection-start-column="71" selection-end-line="467" selection-end-column="71" />
+        <state relative-caret-position="724">
+          <caret line="465" column="64" lean-forward="false" selection-start-line="465" selection-start-column="64" selection-end-line="465" selection-end-column="64" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
@@ -730,8 +730,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/siamese.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="562">
-          <caret line="128" column="0" lean-forward="true" selection-start-line="128" selection-start-column="0" selection-end-line="128" selection-end-column="0" />
+        <state relative-caret-position="2394">
+          <caret line="133" column="31" lean-forward="false" selection-start-line="133" selection-start-column="31" selection-end-line="133" selection-end-column="31" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
