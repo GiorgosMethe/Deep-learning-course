@@ -379,7 +379,7 @@ def feature_extraction():
         '''
             VISUALIZATION
         '''
-        if 0:
+        if 1:
             tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
             tsne_result = tsne.fit_transform(features)
             plt.figure()
