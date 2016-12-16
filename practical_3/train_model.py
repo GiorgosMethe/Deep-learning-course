@@ -339,20 +339,20 @@ def feature_extraction():
             train_set = range(int(features_flatten.shape[0]*0.8))
             test_set = range(train_set[-1]+1, features_flatten.shape[0])
 
-            classif = OneVsRestClassifier(SVC(kernel='linear'))
-            classif.fit(features_flatten[train_set], np.argmax(batch_y[train_set], axis=1))
-            print("Accuracy with flatten:",
-                  classif.score(features_flatten[test_set], np.argmax(batch_y[test_set], axis=1)))
-
-            classif = OneVsRestClassifier(SVC(kernel='linear'))
+            # classif = OneVsRestClassifier(SVC(kernel='linear'))
+            # classif.fit(features_flatten[train_set], np.argmax(batch_y[train_set], axis=1))
+            # print("Accuracy with flatten:",
+            #       classif.score(features_flatten[test_set], np.argmax(batch_y[test_set], axis=1)))
+            #
+            classif = OneVsRestClassifier(SVC(kernel='linear'), n_jobs=8)
             classif.fit(features_fc1[train_set], np.argmax(batch_y[train_set], axis=1))
             print("Accuracy with features_fc1:",
                   classif.score(features_fc1[test_set], np.argmax(batch_y[test_set], axis=1)))
 
-            classif = OneVsRestClassifier(SVC(kernel='linear'))
-            classif.fit(features_fc2[train_set], np.argmax(batch_y[train_set], axis=1))
-            print("Accuracy with features_fc2:",
-                  classif.score(features_fc2[test_set], np.argmax(batch_y[test_set], axis=1)))
+            # classif = OneVsRestClassifier(SVC(kernel='linear'), n_jobs=8)
+            # classif.fit(features_fc2[train_set], np.argmax(batch_y[train_set], axis=1))
+            # print("Accuracy with features_fc2:",
+            #       classif.score(features_fc2[test_set], np.argmax(batch_y[test_set], axis=1)))
 
     elif FLAGS.train_model == 'siamese':
 

@@ -184,6 +184,7 @@ The was no performance gain by using dropout when using smaller batches of $64$ 
 
 
 \subsection{Feature Visualization}
+\label{sec:vis}
 
 In this section I show how the features learned during training of the CNN can be illustrated and how they can be used to train an one-vs-all classifier.
 I load the learned weights during training and converting them to $2$-d points using TSNE.
@@ -218,9 +219,9 @@ classif.score(features[test_set], batch_y[test_set]
 \end{verbatim}
 Here, the reported accuracy\footnote{The accuracy is reported to half of the test set ($5000$ random samples without replacement due to slow training of the OneVsRestClassifier		)} of the one-vs-classifiers on the test set:
 \begin{itemize}
-\item Accuracy with flatten features: $0.59$.
+\item Accuracy with flatten features: $0.6305$.
 \item Accuracy with fc1 features: $0.59$.
-\item Accuracy with fc2 features: $0.703$.
+\item Accuracy with fc2 features: $\mathbf{0.7685}$.
 \end{itemize}
 It is natural that the accuracy is higher for later layers.
 As it was earlier $fc2$ layer can distinguish better features of different classes.
@@ -352,32 +353,45 @@ I used the following two loss functions:
 \item $\mathcal{L} =  Y * \frac{1}{2} * d^2 + (1-Y) * max(margin - d^2, 0)$
 \item $\mathcal{L} =  Y * d^2 + (1-Y) * max(margin - d^2, 0)$
 \end{enumerate}
+In the first the distance in similar label images is multiplied by half, while in the second is not.
 
 
 \subsection{Training}
 
+I construct 3 experiments using both the \texttt{next\_batch} ways (default \& alternative) and the two loss functions.
+\begin{description}
+\item[Experiment 1]{Using the loss function (1) and the default creation of batches}
+\item[Experiment 2]{Using the loss function (2) and the default creation of batches}
+\item[Experiment 3]{Using the loss function (2) and the alternative creation of batches}
+\end{description}
+Figure~\ref{fig:siamese} presents the loss in the training and the test set for $50000$ training steps for the setting of the experiment 1.
+Loss in the test set is computed every $1000$ steps.
+We see that the loss in the training set in decreasing as the training steps increase.
+The same occurs for the loss in the test set.
 \begin{figure}[h!]
 \centering
 \includegraphics[width=10.2cm]{siamese.png}
 \caption{\textbf{Experiment 1} Loss in the training (purple line) and the test set (yellow line) for $50000$ training steps, $margin = 1.0$, using the default \texttt{next\_batch} method and the loss function (1).}
 \label{fig:siamese}
 \end{figure}
-
-
-
+Figure~\ref{fig:siamese-1} presents the loss in the training and the test set for $50000$ training steps for the setting of the experiment 2.
+Here the scaling of the loss is different as a result of the different loss function used in experiment 2.
 \begin{figure}[h!]
 \centering
 \includegraphics[width=10.2cm]{siamese-1.png}
-\caption{\textbf{Experiment 2} Loss in the training (blue line) and the test set (light purple line) for $50000$ training steps, $margin = 1.0$, using the default \texttt{next\_batch} method and the loss function (2).
+\caption{\textbf{Experiment 2} (Different Loss Functions) Loss in the training (blue line) and the test set (light purple line) for $50000$ training steps, $margin = 1.0$, using the default \texttt{next\_batch} method and the loss function (2).
 Loss in the training (purple line) and the test set (yellow line) for $50000$ training steps, $margin = 1.0$, using the default \texttt{next\_batch} method and the loss function (1).}
 \label{fig:siamese-1}
 \end{figure}
-
-
+Figure~\ref{fig:siamese-2} presents the loss in the training and the test set for $50000$ training steps for the setting of the experiment 3.
+Here I compare between two different ways of batch sampling between experiment 2 and 3.
+The same loss function in used both experiments.
+It is easy to see that using the alternative batch sampling, the loss is decreasing faster and results in lower loss in the test set as well.
+In the next section I show that the features retained with the alternative batch sampling increase the accuracy of the one-vs-rest classifier.
 \begin{figure}[h!]
 \centering
 \includegraphics[width=10.2cm]{siamese-2.png}
-\caption{\textbf{Experiment 3} Loss in the training (blue line) and the test set (light purple line) for $50000$ training steps, $margin = 1.0$, using the default \texttt{next\_batch} method and the loss function (2).
+\caption{\textbf{Experiment 3} (Default vs Alternative Batch Creation) Loss in the training (blue line) and the test set (light purple line) for $50000$ training steps, $margin = 1.0$, using the default \texttt{next\_batch} method and the loss function (2).
 Loss in the training (yellow line) and the test set (light purple line) for $50000$ training steps, $margin = 1.0$, using the default \texttt{next\_batch} method and the loss function (2).}
 \label{fig:siamese-2}
 \end{figure}
@@ -385,27 +399,42 @@ Loss in the training (yellow line) and the test set (light purple line) for $500
 
 
 
+
 \subsection{Feature Visualization}
+
+In the previous section I set up three experiments and presented the loss during training in the training set.
+In this section I illustrate the features in the 2-dimensional space as these transformed by TSNE (as this was implemented in Section~\ref{sec:vis}.).
+
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=6.2cm]{visualization-siamese-plain.pdf}
 \includegraphics[width=6.2cm]{visualization-siamese-1.pdf}
 \includegraphics[width=7.2cm]{visualization-siamese-3.pdf}
-\caption{}
+\caption{Visualization of the $2D$ features generated out of the whole test set. Experiment 1 (top left), experiment 2 (top right), experiment 3 (bottom).}
 \label{fig:features}
 \end{figure}
 
 
 \subsection{One-vs-Rest Classifier}
-Here, I present the accuracy of the one-vs-rest classifier on the features learned from in the final layer of the siamese network for all experiments
+
+Here, I present the accuracy of the one-vs-rest classifier on the features learned from in the final layer of the siamese network for all experiments.
+
 \begin{itemize}
 \item \textbf{Experiment 1}: $0.476$
 \item \textbf{Experiment 2}: $0.473$
 \item \textbf{Experiment 3}: $\mathbf{0.682}$
 \end{itemize}
 
-\section{Transfer Learning}
+Using the different loss function with the default batch sampling method did not help the accuracy obtained.
+However, in experiment 3 I used the alternative batch sampling function which was the main reason for the large improvement in the accuracy.
+
+
+
+
+\clearpage
+
+\section{Task 3: Transfer Learning}
  
  
 \begin{figure}[h!]
@@ -415,9 +444,12 @@ Here, I present the accuracy of the one-vs-rest classifier on the features learn
 \label{fig:graph}
 \end{figure}
 
-
-
 \subsection{Feature Extraction}
+
+In this section I present the results of my implementation for the feature extraction of the third task.
+I used the last 3 layers of the convNet inference method from the first task of the assignment.
+I also used stopGradient method of tensorflow to disconnect vgg pretrained network from convNet and the training updates.
+
 
 \begin{figure}[h!]
 \centering
@@ -444,16 +476,24 @@ Here, I present the accuracy of the one-vs-rest classifier on the features learn
 \subsubsection{Refining}
 
 
+\subsection{Performance of transfer learning on Cifar10}
+\begin{description}
+\item[Feature extraction:]{$0.6743$}
+\item[Retraining:]{$0.8505$}
+\item[Refining-$100$:]{$0.8441$}
+\item[Refining-$1000$:]{$0.8461$}
+\item[Refining-$2500$:]{$\mathbf{0.8510}$}
+\end{description}
 
  
-%
-%Using the same TSNE algorithm we present the $2$-dimensional representation of the feat
-%\section{Conclusion}
-%
-%In this assignment I implemented a CNN and reported its performance over the CIFAR10 dataset using different parameters.
-%I also implemented the siamese architecture which uses two versions of the same CNN to perform learning in order to distinguish between classes.
-%The amount of training steps requires for the siamese are higher than the single CNN architecture.
-%The time required for the experiments did not let me try more parameter values, therefore I cannot draw any important conclusions regarding the right parameters that should be used for the two different approaches.
+
+\section{Conclusion}
+
+In this assignment I implemented a CNN and reported its performance over the CIFAR10 dataset using different parameters.
+I also implemented the siamese architecture which uses two versions of the same CNN to perform learning in order to distinguish between classes.
+I showed that using the alternative batch sampling procedure the loss is reduced and the features retained result in better accuracy when an one-vs-rest classifier is used.
+The amount of training steps requires for the siamese are higher than the single CNN architecture.
+Last, I implemented the third task of the assignment where we import pre-trained layers from VGG-16 and apply learning on Cifar10 dataset.
 
 
 \end{document}

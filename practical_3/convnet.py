@@ -91,30 +91,30 @@ class ConvNet(object):
                                         shape=[flatten.get_shape()[1], 384],
                                         initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
 
-                if self.wd is not None:
-                    weight_decay = tf.mul(tf.nn.l2_loss(w_fc1), self.wd, name='weight_loss')
-                    tf.add_to_collection('losses', weight_decay)
+                # if self.wd is not None:
+                #     weight_decay = tf.mul(tf.nn.l2_loss(w_fc1), self.wd, name='weight_loss')
+                #     tf.add_to_collection('losses', weight_decay)
 
                 b_fc1 = tf.get_variable('biases', shape=[384], initializer=tf.constant_initializer(0.0))
 
                 h_fc1 = tf.nn.relu(tf.matmul(flatten, w_fc1) + b_fc1, name="h_f_fc1")
 
-                h_fc1 = tf.cond(tf.cast(self.isTrain, tf.bool), lambda: tf.nn.dropout(h_fc1, 0.8), lambda: h_fc1)
+                # h_fc1 = tf.cond(tf.cast(self.isTrain, tf.bool), lambda: tf.nn.dropout(h_fc1, 0.8), lambda: h_fc1)
 
             with tf.variable_scope('fc2') as scope:
                 w_fc2 = tf.get_variable('weights',
                                         shape=[384, 192],
                                         initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
 
-                if self.wd is not None:
-                    weight_decay = tf.mul(tf.nn.l2_loss(w_fc2), self.wd, name='weight_loss')
-                    tf.add_to_collection('losses', weight_decay)
+                # if self.wd is not None:
+                #     weight_decay = tf.mul(tf.nn.l2_loss(w_fc2), self.wd, name='weight_loss')
+                #     tf.add_to_collection('losses', weight_decay)
 
                 b_fc2 = tf.get_variable('biases', shape=[192], initializer=tf.constant_initializer(0.0))
 
                 h_fc2 = tf.nn.relu(tf.matmul(h_fc1, w_fc2) + b_fc2, name="h_f_fc2")
 
-                h_fc2 = tf.cond(tf.cast(self.isTrain, tf.bool), lambda : tf.nn.dropout(h_fc2, 0.), lambda : h_fc2)
+                # h_fc2 = tf.cond(tf.cast(self.isTrain, tf.bool), lambda : tf.nn.dropout(h_fc2, 0.), lambda : h_fc2)
 
             with tf.variable_scope('fc3') as scope:
                 w_fc3 = tf.get_variable('weights',
