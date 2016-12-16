@@ -56,6 +56,9 @@ class ConvNet(object):
             ########################
             # PUT YOUR CODE HERE  #
             ########################
+            '''
+                For linear
+            '''
             with tf.variable_scope('conv1') as scope:
                 w_conv1 = tf.get_variable('weights',
                                           shape=[5, 5, 3, 64],
@@ -83,7 +86,6 @@ class ConvNet(object):
                                                      int(h_pool2.get_shape()[1] *
                                                          h_pool2.get_shape()[2] *
                                                          h_pool2.get_shape()[3])], name="h_f_flatten")
-
             with tf.variable_scope('fc1') as scope:
                 w_fc1 = tf.get_variable('weights',
                                         shape=[flatten.get_shape()[1], 384],
@@ -124,7 +126,6 @@ class ConvNet(object):
 
 
             logits = tf.matmul(h_fc2, w_fc3) + b_fc3
-
             ########################
             # END OF YOUR CODE    #
             ########################

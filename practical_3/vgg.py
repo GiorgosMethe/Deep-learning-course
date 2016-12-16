@@ -276,6 +276,7 @@ def load_pretrained_VGG16_pool5(input, scope_name='vgg'):
     return pool5, assign_ops
 
 def load_weights(weight_file):
+  print("Loading Weights")
   weights = np.load(weight_file)
   keys = sorted(weights.keys())
   return weights, keys

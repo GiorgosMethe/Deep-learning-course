@@ -5,3 +5,5 @@ practical_2/logs/*
 practical_3/cifar10/cifar-10-batches-py/*
 practical_3/logs/*
 practical_3/checkpoints/*
+*.pyc
+practical_3/pretrained_params/*

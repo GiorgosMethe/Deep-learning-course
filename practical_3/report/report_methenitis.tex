@@ -396,101 +396,25 @@ Loss in the training (yellow line) and the test set (light purple line) for $500
 
 
 \subsection{One-vs-Rest Classifier}
+Here, I present the accuracy of the one-vs-rest classifier on the features learned from in the final layer of the siamese network for all experiments
 \begin{itemize}
-\textbf{Experiment 1}: $0.476$
-\textbf{Experiment 2}: $0.473$
-\textbf{Experiment 3}: $0.682$
+\item \textbf{Experiment 1}: $0.476$
+\item \textbf{Experiment 2}: $0.473$
+\item \textbf{Experiment 3}: $\mathbf{0.682}$
 \end{itemize}
 
-
-%Figure~\ref{fig:6} illustrates the loss in the training and the test set using the normal implementation of the batch creation.
-%The siamese network learning converges after $12000$ steps.
-%The network seems to learn the features that minimize the loss.
-%Figure~\ref{fig:7} presents four different implementations using different parameters.
+\section{Transfer Learning}
+ 
+ 
+ \begin{figure}[h!]
+\centering
+\includegraphics[width=5.2cm]{graph.png}
+\caption{Graph for the task 3 of the assignment, the final three layers of convnet were used. Note the stop gradient operation, where we don't want to update the pre-trained weights.}
+\label{fig:features}
+\end{figure}
+ 
 %
-%
-%\begin{figure}[h!]
-%\centering
-%\includegraphics[width=7.2cm]{loss-siamese-train-1.png}\	
-%\includegraphics[width=6.6cm]{loss-siamese-test-1.pdf}
-%\caption{Loss in the training (Left) and the test set (Right - green line) for $15000$ training steps, $margin = 0.2$, and weight regularization loss.}
-%\label{fig:6}
-%\end{figure}
-%
-%
-%\begin{figure}[h!]
-%\centering
-%\includegraphics[width=0.4\textwidth]{loss-siamese-train-1}
-%\includegraphics[width=0.4\textwidth]{loss-siamese-train-2}
-%\includegraphics[width=0.4\textwidth]{loss-siamese-train-3}
-%\includegraphics[width=0.4\textwidth]{loss-siamese-train-4}
-%\caption{Visualization of the $l2$-normalized features in the output of the CNN for $5000$ samples of the test set. For $margin=0.2$ with weight normalization (top-left), for $margin=1.0$ with weight normalization (top-right), and without normalization (bottom-left). Last, the visualization of the features when the alternative way of creating batches is used (bottom-right).
-%For $margin=1.0$ the alternative way of creating batches is reducing the loss.}
-%\label{fig:7}
-%\end{figure}
-%
-%
-%\subsection{Feature Visualization}
-%
-%
-%Using the same TSNE algorithm we present the $2$-dimensional representation of the features for the siamese architecture. Figure~\ref{fig:8} presents the $2$-d representation of the features over $5000$ samples of the test set, for the four different implementation showed in Figure~\ref{fig:7}.
-%
-%\begin{figure}[h!]
-%\centering
-%\includegraphics[width=0.4\textwidth]{visualization-siamese-features_fc2.pdf}
-%\includegraphics[width=0.4\textwidth]{visualization-siamese-features_fc2-1.pdf}
-%\includegraphics[width=0.4\textwidth]{visualization-siamese-features_fc2-2.pdf}
-%\includegraphics[width=0.4\textwidth]{visualization-siamese-features_fc2-3.pdf}
-%\caption{Visualization of the $l2$-normalized features in the output of the CNN for $5000$ samples of the test set. For $margin=0.2$ with weight normalization (top-left), for $margin=1.0$ with weight normalization (top-right), and without normalization (bottom-left). Last, the visualization of the features when the alternative way of creating batches is used $margin = 1.0$ and without weight normalization (bottom-right).}
-%\label{fig:8}
-%\end{figure}
-%
-%\subsection{One-vs-All Classifiers}
-%
-%For the four different implementation parameters that were presented in the Figure~\ref{fig:7} and \ref{fig:8} the accuracy of the one-vs-all classifier that is achieved:
-%\begin{itemize}
-%\item Accuracy with l\_2-norm: $0.0957$
-%\item Accuracy with l\_2-norm: $0.121$
-%\item Accuracy with l\_2-norm: $0.1048$
-%\item Accuracy with l\_2-norm: $0.1564$
-%\end{itemize}
-%I showed that the loss was reduced by using the alternative way of sampling batches, here the accuracy of the classifier is increased as well.
-%Figure
-%
-%
-%\subsection{Update for Task 2}
-%
-%In this section I provide the results of a last experiment where I used $50000$ training steps.
-%The model seems to learn and distinguishes between different classes.
-%Figure~\ref{fig:9} presents the loss in the training set.
-%
-%
-%
-%\begin{figure}[h!]
-%\centering
-%\includegraphics[width=0.8\textwidth]{loss-siamese-final.png}
-%\caption{Loss of the siamese architecture of the CNN in the training procedure for $50000$ training steps. For $margin=1.0$ without weight normalization.}
-%\label{fig:9}
-%\end{figure}
-%
-%Figure~\ref{fig:10} presents the visualized in $2-d$ features.
-%
-%\begin{figure}[h!]
-%\centering
-%\includegraphics[width=0.8\textwidth]{visualization-siamese-features_fc2-4.pdf}
-%\caption{Visualization of the $l2$-normalized features in the output of the CNN for all samples of the test set. For $margin=1.0$ without weight normalization.}
-%\label{fig:10}
-%\end{figure}
-%
-%To test the accuracy of the one-vs-all classifier I use the features retained by the learned model to train the classifiers.
-%Using the 80 percent of the features I train a linear kernel OneVsRest classifier, and test the accuracy over the rest 20 percent.
-%The reported accuracy over the test set is:
-%\begin{itemize}
-%\item Accuracy with l\_2-norm: $0.6789$
-%\end{itemize}
-%
-%
-%
+%Using the same TSNE algorithm we present the $2$-dimensional representation of the feat
 %\section{Conclusion}
 %
 %In this assignment I implemented a CNN and reported its performance over the CIFAR10 dataset using different parameters.

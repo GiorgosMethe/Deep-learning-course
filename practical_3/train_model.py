@@ -296,63 +296,63 @@ def feature_extraction():
             saver = tf.train.Saver(tf.all_variables())
             saver.restore(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(MAX_STEPS_DEFAULT) + ".ckpt")
 
-            batch_x, batch_y = cifar10.test.images[:500], cifar10.test.labels[:500]
+            batch_x, batch_y = cifar10.test.images, cifar10.test.labels
             x_, features_flatten, features_fc1, features_fc2 = session.run([x_, features_flatten, features_fc1, features_fc2], feed_dict={x: batch_x, y_: batch_y})
 
-            '''
-            VISUALIZATION
-            '''
-            if 0:
-                tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-                tsne_result = tsne.fit_transform(features_flatten)
-                plt.figure()
-                colors = cm.rainbow(np.linspace(0, 1, len(batch_y[0])))
-                sizes = np.random.random_integers(25, 50, size=len(batch_y[0]))
-                for i in range(len(batch_y[0])):
-                    index = np.where(np.argmax(batch_y, axis=1) == i)
-                    plt.scatter(tsne_result[index,0], tsne_result[index, 1], c=colors[i], s=sizes[i], label=i)
-                plt.legend(numpoints=1, fontsize=8)
-                plt.savefig("visualization-linear-features_flatten.pdf", bbox_inches = 'tight')
+        '''
+        VISUALIZATION
+        '''
+        if 0:
+            tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+            tsne_result = tsne.fit_transform(features_flatten)
+            plt.figure()
+            colors = cm.rainbow(np.linspace(0, 1, len(batch_y[0])))
+            sizes = np.random.random_integers(25, 50, size=len(batch_y[0]))
+            for i in range(len(batch_y[0])):
+                index = np.where(np.argmax(batch_y, axis=1) == i)
+                plt.scatter(tsne_result[index,0], tsne_result[index, 1], c=colors[i], s=sizes[i], label=i)
+            plt.legend(numpoints=1, fontsize=8)
+            plt.savefig("visualization-linear-features_flatten.pdf", bbox_inches = 'tight')
 
-                tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-                tsne_result = tsne.fit_transform(features_fc1)
-                plt.figure()
-                for i in range(len(batch_y[0])):
-                    index = np.where(np.argmax(batch_y, axis=1) == i)
-                    plt.scatter(tsne_result[index,0], tsne_result[index, 1], c=colors[i], s=sizes[i], label=i)
-                plt.legend(numpoints=1, fontsize=8)
-                plt.savefig("visualization-linear-features_fc1.pdf", bbox_inches = 'tight')
+            tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+            tsne_result = tsne.fit_transform(features_fc1)
+            plt.figure()
+            for i in range(len(batch_y[0])):
+                index = np.where(np.argmax(batch_y, axis=1) == i)
+                plt.scatter(tsne_result[index,0], tsne_result[index, 1], c=colors[i], s=sizes[i], label=i)
+            plt.legend(numpoints=1, fontsize=8)
+            plt.savefig("visualization-linear-features_fc1.pdf", bbox_inches = 'tight')
 
-                tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-                tsne_result = tsne.fit_transform(features_fc2)
-                plt.figure()
-                for i in range(len(batch_y[0])):
-                    index = np.where(np.argmax(batch_y, axis=1) == i)
-                    plt.scatter(tsne_result[index,0], tsne_result[index, 1], c=colors[i], s=sizes[i], label=i)
-                plt.legend(numpoints=1, fontsize=8)
-                plt.savefig("visualization-linear-features_fc2.pdf", bbox_inches = 'tight')
+            tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+            tsne_result = tsne.fit_transform(features_fc2)
+            plt.figure()
+            for i in range(len(batch_y[0])):
+                index = np.where(np.argmax(batch_y, axis=1) == i)
+                plt.scatter(tsne_result[index,0], tsne_result[index, 1], c=colors[i], s=sizes[i], label=i)
+            plt.legend(numpoints=1, fontsize=8)
+            plt.savefig("visualization-linear-features_fc2.pdf", bbox_inches = 'tight')
 
-            '''
-            ONE-VS-REST CLASSIFIER
-            '''
-            if 1:
-                train_set = range(int(features_flatten.shape[0]*0.8))
-                test_set = range(train_set[-1]+1, features_flatten.shape[0])
+        '''
+        ONE-VS-REST CLASSIFIER
+        '''
+        if 1:
+            train_set = range(int(features_flatten.shape[0]*0.8))
+            test_set = range(train_set[-1]+1, features_flatten.shape[0])
 
-                classif = OneVsRestClassifier(SVC(kernel='linear'))
-                classif.fit(features_flatten[train_set], np.argmax(batch_y[train_set], axis=1))
-                print("Accuracy with flatten:",
-                      classif.score(features_flatten[test_set], np.argmax(batch_y[test_set], axis=1)))
+            classif = OneVsRestClassifier(SVC(kernel='linear'))
+            classif.fit(features_flatten[train_set], np.argmax(batch_y[train_set], axis=1))
+            print("Accuracy with flatten:",
+                  classif.score(features_flatten[test_set], np.argmax(batch_y[test_set], axis=1)))
 
-                classif = OneVsRestClassifier(SVC(kernel='linear'))
-                classif.fit(features_fc1[train_set], np.argmax(batch_y[train_set], axis=1))
-                print("Accuracy with features_fc1:",
-                      classif.score(features_fc1[test_set], np.argmax(batch_y[test_set], axis=1)))
+            classif = OneVsRestClassifier(SVC(kernel='linear'))
+            classif.fit(features_fc1[train_set], np.argmax(batch_y[train_set], axis=1))
+            print("Accuracy with features_fc1:",
+                  classif.score(features_fc1[test_set], np.argmax(batch_y[test_set], axis=1)))
 
-                classif = OneVsRestClassifier(SVC(kernel='linear'))
-                classif.fit(features_fc2[train_set], np.argmax(batch_y[train_set], axis=1))
-                print("Accuracy with features_fc2:",
-                      classif.score(features_fc2[test_set], np.argmax(batch_y[test_set], axis=1)))
+            classif = OneVsRestClassifier(SVC(kernel='linear'))
+            classif.fit(features_fc2[train_set], np.argmax(batch_y[train_set], axis=1))
+            print("Accuracy with features_fc2:",
+                  classif.score(features_fc2[test_set], np.argmax(batch_y[test_set], axis=1)))
 
     elif FLAGS.train_model == 'siamese':
 

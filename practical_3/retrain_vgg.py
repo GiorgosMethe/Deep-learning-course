@@ -4,22 +4,29 @@ from __future__ import print_function
 
 import argparse
 import os
+import vgg
+from convnet import ConvNet
 
 import tensorflow as tf
 import numpy as np
 
+import cifar10_utils
+
 LEARNING_RATE_DEFAULT = 1e-4
 BATCH_SIZE_DEFAULT = 128
-MAX_STEPS_DEFAULT = 15000
+MAX_STEPS_DEFAULT = 10000
 EVAL_FREQ_DEFAULT = 1000
 CHECKPOINT_FREQ_DEFAULT = 5000
 PRINT_FREQ_DEFAULT = 10
 OPTIMIZER_DEFAULT = 'ADAM'
 REFINE_AFTER_K_STEPS_DEFAULT = 0
 
+EXPERIMENT = '/' + 'vgg16-retraining'
 DATA_DIR_DEFAULT = './cifar10/cifar-10-batches-py'
-LOG_DIR_DEFAULT = './logs/cifar10'
-CHECKPOINT_DIR_DEFAULT = './checkpoints'
+LOG_DIR_DEFAULT = './logs/cifar10' + EXPERIMENT
+CHECKPOINT_DIR_DEFAULT = './checkpoints' + EXPERIMENT
+
+cifar10 = cifar10_utils.get_cifar10(DATA_DIR_DEFAULT)
 
 def train_step(loss):
     """
@@ -72,14 +79,45 @@ def train():
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    model = vgg()
+    model = ConvNet()
 
-    model.wd = None
+    vgg.load_weights(vgg.VGG_FILE)
 
     x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
     y_ = tf.placeholder(tf.float32, shape=[None, 10])
+    refine = tf.placeholder(tf.bool)
 
-    x_ = model.inference(x)
+    pool5, assign_ops = vgg.load_pretrained_VGG16_pool5(x)
+    pool5 = tf.cond(refine, lambda : pool5, lambda : tf.stop_gradient(pool5))
+
+    with tf.variable_scope('flatten') as scope:
+        flatten = tf.reshape(pool5, shape=[-1, 512], name="h_f_flatten")
+
+    with tf.variable_scope('fc1') as scope:
+        w_fc1 = tf.get_variable('weights',
+                                shape=[flatten.get_shape()[1], 384],
+                                initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+        b_fc1 = tf.get_variable('biases', shape=[384], initializer=tf.constant_initializer(0.0))
+
+    h_fc1 = tf.nn.relu(tf.matmul(flatten, w_fc1) + b_fc1, name="h_f_fc1")
+
+    with tf.variable_scope('fc2') as scope:
+        w_fc2 = tf.get_variable('weights',
+                                shape=[384, 192],
+                                initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+
+    b_fc2 = tf.get_variable('biases', shape=[192], initializer=tf.constant_initializer(0.0))
+
+    h_fc2 = tf.nn.relu(tf.matmul(h_fc1, w_fc2) + b_fc2, name="h_f_fc2")
+
+    with tf.variable_scope('fc3') as scope:
+        w_fc3 = tf.get_variable('weights',
+                                shape=[192, 10],
+                                initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+
+        b_fc3 = tf.get_variable('biases', shape=[10], initializer=tf.constant_initializer(0.0))
+
+    x_ = tf.matmul(h_fc2, w_fc3) + b_fc3
 
     with tf.name_scope('loss'):
         loss = model.loss(x_, y_)
@@ -90,46 +128,54 @@ def train():
     with tf.name_scope('train'):
         train_step = tf.train.AdamOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
 
-    # init = tf.initialize_all_variables()
-    # session = tf.Session()
-    # session.run(init)
-    #
-    # tf.scalar_summary('accuracy', accuracy)
-    # tf.scalar_summary('loss', loss)
-    # merged = tf.merge_all_summaries()
-    #
-    # train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/linear-train', session.graph)
-    # test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/linear-test', session.graph)
-    #
-    # saver = tf.train.Saver(tf.all_variables())
-    #
-    # for iteration in range(1, MAX_STEPS_DEFAULT + 1):
-    #     model.isTrain = True
-    #     batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
-    #     _, summary = session.run([train_step, merged], feed_dict={x: batch_x, y_: batch_y})
-    #     train_writer.add_summary(summary, iteration)
-    #
-    #     if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
-    #         saver.save(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(iteration) + ".ckpt")
-    #
-    #     if iteration % EVAL_FREQ_DEFAULT == 0.0:
-    #         _split = 250
-    #         avg_loss, avg_acc = 0.0, 0.0
-    #         model.isTrain = False
-    #         for _iter in range(int(len(cifar10.test.images) / _split)):
-    #             batch_x, batch_y = cifar10.test.images[_iter * _split:((_iter + 1) * _split)], \
-    #                                cifar10.test.labels[_iter * _split:((_iter + 1) * _split)]
-    #
-    #             l, acc = session.run([loss, accuracy], feed_dict={x: batch_x, y_: batch_y})
-    #             avg_loss += l
-    #             avg_acc += acc
-    #         avg_loss /= float(len(cifar10.test.images)) / float(_split)
-    #         avg_acc /= float(len(cifar10.test.images)) / float(_split)
-    #         summary = tf.Summary()
-    #         summary.value.add(tag='loss', simple_value=avg_loss)
-    #         summary.value.add(tag='accuracy', simple_value=avg_acc)
-    #         test_writer.add_summary(summary, iteration)
-    #         print(iteration, avg_loss, avg_acc)
+    init = tf.initialize_all_variables()
+    session = tf.Session()
+    session.run(init)
+
+    session.run(assign_ops)
+
+    tf.scalar_summary('accuracy', accuracy)
+    tf.scalar_summary('loss', loss)
+    merged = tf.merge_all_summaries()
+
+    train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/linear-train', session.graph)
+    test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/linear-test', session.graph)
+
+    saver = tf.train.Saver(tf.all_variables())
+
+    for iteration in range(1, MAX_STEPS_DEFAULT + 1):
+        model.isTrain = True
+        batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
+        _, summary, l, acc = session.run([train_step, merged, loss, accuracy],
+                                         feed_dict={refine: (iteration > REFINE_AFTER_K_STEPS_DEFAULT),
+                                                    x: batch_x, y_: batch_y})
+
+        train_writer.add_summary(summary, iteration)
+
+        print(iteration, acc, l)
+
+        if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
+            saver.save(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(iteration) + ".ckpt")
+
+        if iteration % EVAL_FREQ_DEFAULT == 0.0:
+            _split = 250
+            avg_loss, avg_acc = 0.0, 0.0
+            model.isTrain = False
+            for _iter in range(int(len(cifar10.test.images) / _split)):
+                batch_x, batch_y = cifar10.test.images[_iter * _split:((_iter + 1) * _split)], \
+                                   cifar10.test.labels[_iter * _split:((_iter + 1) * _split)]
+
+                l, acc = session.run([loss, accuracy], feed_dict={refine: 0, x: batch_x, y_: batch_y})
+                avg_loss += l
+                avg_acc += acc
+            avg_loss /= float(len(cifar10.test.images)) / float(_split)
+            avg_acc /= float(len(cifar10.test.images)) / float(_split)
+            summary = tf.Summary()
+            summary.value.add(tag='loss', simple_value=avg_loss)
+            summary.value.add(tag='accuracy', simple_value=avg_acc)
+            test_writer.add_summary(summary, iteration)
+            print(iteration, avg_loss, avg_acc)
+
     ########################
     # END OF YOUR CODE    #
     ########################
