@@ -72,7 +72,64 @@ def train():
     ########################
     # PUT YOUR CODE HERE  #
     ########################
-    raise NotImplementedError
+    model = vgg()
+
+    model.wd = None
+
+    x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+    y_ = tf.placeholder(tf.float32, shape=[None, 10])
+
+    x_ = model.inference(x)
+
+    with tf.name_scope('loss'):
+        loss = model.loss(x_, y_)
+
+    with tf.name_scope('accuracy'):
+        accuracy = model.accuracy(x_, y_)
+
+    with tf.name_scope('train'):
+        train_step = tf.train.AdamOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
+
+    # init = tf.initialize_all_variables()
+    # session = tf.Session()
+    # session.run(init)
+    #
+    # tf.scalar_summary('accuracy', accuracy)
+    # tf.scalar_summary('loss', loss)
+    # merged = tf.merge_all_summaries()
+    #
+    # train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/linear-train', session.graph)
+    # test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/linear-test', session.graph)
+    #
+    # saver = tf.train.Saver(tf.all_variables())
+    #
+    # for iteration in range(1, MAX_STEPS_DEFAULT + 1):
+    #     model.isTrain = True
+    #     batch_x, batch_y = cifar10.train.next_batch(BATCH_SIZE_DEFAULT)
+    #     _, summary = session.run([train_step, merged], feed_dict={x: batch_x, y_: batch_y})
+    #     train_writer.add_summary(summary, iteration)
+    #
+    #     if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
+    #         saver.save(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(iteration) + ".ckpt")
+    #
+    #     if iteration % EVAL_FREQ_DEFAULT == 0.0:
+    #         _split = 250
+    #         avg_loss, avg_acc = 0.0, 0.0
+    #         model.isTrain = False
+    #         for _iter in range(int(len(cifar10.test.images) / _split)):
+    #             batch_x, batch_y = cifar10.test.images[_iter * _split:((_iter + 1) * _split)], \
+    #                                cifar10.test.labels[_iter * _split:((_iter + 1) * _split)]
+    #
+    #             l, acc = session.run([loss, accuracy], feed_dict={x: batch_x, y_: batch_y})
+    #             avg_loss += l
+    #             avg_acc += acc
+    #         avg_loss /= float(len(cifar10.test.images)) / float(_split)
+    #         avg_acc /= float(len(cifar10.test.images)) / float(_split)
+    #         summary = tf.Summary()
+    #         summary.value.add(tag='loss', simple_value=avg_loss)
+    #         summary.value.add(tag='accuracy', simple_value=avg_acc)
+    #         test_writer.add_summary(summary, iteration)
+    #         print(iteration, avg_loss, avg_acc)
     ########################
     # END OF YOUR CODE    #
     ########################

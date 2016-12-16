@@ -1,5 +1,14 @@
 \BOOKMARK [1][-]{section.1}{Task 1}{}% 1
-\BOOKMARK [2][-]{subsection.1.1}{Smaller batch size}{section.1}% 2
-\BOOKMARK [1][-]{section.2}{Task 2}{}% 3
-\BOOKMARK [1][-]{section.3}{Task 3}{}% 4
-\BOOKMARK [1][-]{section.4}{Conclusion}{}% 5
+\BOOKMARK [2][-]{subsection.1.1}{Regularization}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Dropout}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Smaller Batch Size}{section.1}% 4
+\BOOKMARK [3][-]{subsubsection.1.3.1}{Regularization}{subsection.1.3}% 5
+\BOOKMARK [3][-]{subsubsection.1.3.2}{Dropout}{subsection.1.3}% 6
+\BOOKMARK [2][-]{subsection.1.4}{Feature Visualization}{section.1}% 7
+\BOOKMARK [3][-]{subsubsection.1.4.1}{One-vs-Rest Classifier}{subsection.1.4}% 8
+\BOOKMARK [1][-]{section.2}{Task 2}{}% 9
+\BOOKMARK [2][-]{subsection.2.1}{Dataset}{section.2}% 10
+\BOOKMARK [2][-]{subsection.2.2}{Loss function}{section.2}% 11
+\BOOKMARK [2][-]{subsection.2.3}{Training}{section.2}% 12
+\BOOKMARK [2][-]{subsection.2.4}{Feature Visualization}{section.2}% 13
+\BOOKMARK [2][-]{subsection.2.5}{One-vs-Rest Classifier}{section.2}% 14

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Arch Linux) (preloaded format=pdflatex 2016.11.28)  12 DEC 2016 13:22
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Arch Linux) (preloaded format=pdflatex 2016.11.28)  16 DEC 2016 13:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -727,13 +727,13 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <17.28> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 46.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 45.
 
 (/usr/share/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msa on input line 46.
+LaTeX Font Info:    Try loading font information for U+msa on input line 45.
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -741,7 +741,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/share/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 46.
+LaTeX Font Info:    Try loading font information for U+msb on input line 45.
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -750,8 +750,8 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 46.
-LaTeX Font Info:    Try loading font information for T1+cmtt on input line 46.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 45.
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 45.
 
 (/usr/share/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
@@ -761,100 +761,129 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 47.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 46.
 
-<acc1.png, id=26, 306.14375pt x 200.75pt>
-File: acc1.png Graphic file (type png)
- <use acc1.png>
-Package pdftex.def Info: acc1.png used on input line 60.
-(pdftex.def)             Requested size: 138.85184pt x 91.04872pt.
+<acc-plain.png, id=61, 304.13625pt x 198.7425pt>
+File: acc-plain.png Graphic file (type png)
+ <use acc-plain.png>
+Package pdftex.def Info: acc-plain.png used on input line 70.
+(pdftex.def)             Requested size: 174.17159pt x 113.81102pt.
 
-<loss1.png, id=28, 307.1475pt x 203.76125pt>
-File: loss1.png Graphic file (type png)
- <use loss1.png>
-Package pdftex.def Info: loss1.png used on input line 61.
-(pdftex.def)             Requested size: 137.24495pt x 91.04872pt.
-
-<acc2.png, id=29, 578.16pt x 433.62pt>
-File: acc2.png Graphic file (type png)
- <use acc2.png>
-Package pdftex.def Info: acc2.png used on input line 69.
-(pdftex.def)             Requested size: 121.39072pt x 91.04872pt.
-
-<loss2.png, id=30, 578.16pt x 433.62pt>
-File: loss2.png Graphic file (type png)
- <use loss2.png>
-Package pdftex.def Info: loss2.png used on input line 70.
-(pdftex.def)             Requested size: 121.39072pt x 91.04872pt.
-
-<acc3.png, id=33, 309.155pt x 199.74625pt>
-File: acc3.png Graphic file (type png)
- <use acc3.png>
-Package pdftex.def Info: acc3.png used on input line 83.
-(pdftex.def)             Requested size: 140.92047pt x 91.04872pt.
-
-<loss3.png, id=34, 306.14375pt x 200.75pt>
-File: loss3.png Graphic file (type png)
- <use loss3.png>
-Package pdftex.def Info: loss3.png used on input line 84.
-(pdftex.def)             Requested size: 138.85184pt x 91.04872pt.
+<loss-plain.png, id=63, 304.13625pt x 200.75pt>
+File: loss-plain.png Graphic file (type png)
+ <use loss-plain.png>
+Package pdftex.def Info: loss-plain.png used on input line 71.
+(pdftex.def)             Requested size: 172.42667pt x 113.81102pt.
+ [1
 
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./acc-plain.png> <./loss-p
+lain.png>] <acc-plain-reg.png, id=79, 304.13625pt x 197.73875pt>
+File: acc-plain-reg.png Graphic file (type png)
 
-<acc4.png, id=35, 578.16pt x 433.62pt>
-File: acc4.png Graphic file (type png)
- <use acc4.png>
-Package pdftex.def Info: acc4.png used on input line 92.
-(pdftex.def)             Requested size: 121.39072pt x 91.04872pt.
+<use acc-plain-reg.png>
+Package pdftex.def Info: acc-plain-reg.png used on input line 93.
+(pdftex.def)             Requested size: 175.04868pt x 113.81102pt.
+ <loss-plain-reg.png, id=80, 305.14pt x 200.75pt>
+File: loss-plain-reg.png Graphic file (type png)
 
-<loss4.png, id=36, 578.16pt x 433.62pt>
-File: loss4.png Graphic file (type png)
- <use loss4.png>
-Package pdftex.def Info: loss4.png used on input line 93.
-(pdftex.def)             Requested size: 121.39072pt x 91.04872pt.
+<use loss-plain-reg.png>
+Package pdftex.def Info: loss-plain-reg.png used on input line 94.
+(pdftex.def)             Requested size: 172.99573pt x 113.81102pt.
 
+<acc-plain-drop.png, id=82, 306.14375pt x 199.74625pt>
+File: acc-plain-drop.png Graphic file (type png)
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+<use acc-plain-drop.png>
+Package pdftex.def Info: acc-plain-drop.png used on input line 113.
+(pdftex.def)             Requested size: 174.43367pt x 113.81102pt.
 
-<visualization-linear-features_flatten.pdf, id=37, 488.14714pt x 382.86789pt>
+<loss-plain-drop.png, id=83, 304.13625pt x 198.7425pt>
+File: loss-plain-drop.png Graphic file (type png)
+
+<use loss-plain-drop.png>
+Package pdftex.def Info: loss-plain-drop.png used on input line 114.
+(pdftex.def)             Requested size: 174.17159pt x 113.81102pt.
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 120.
+
+ (/usr/share/texmf-dist/tex/latex/psnfss/omsptm.fd
+File: omsptm.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 120.
+
+<acc-linear-64.png, id=85, 306.14375pt x 197.73875pt>
+File: acc-linear-64.png Graphic file (type png)
+ <use acc-linear-64.png>
+Package pdftex.def Info: acc-linear-64.png used on input line 134.
+(pdftex.def)             Requested size: 176.20412pt x 113.81102pt.
+
+<loss-linear-64.png, id=86, 304.13625pt x 197.73875pt>
+File: loss-linear-64.png Graphic file (type png)
+
+<use loss-linear-64.png>
+Package pdftex.def Info: loss-linear-64.png used on input line 135.
+(pdftex.def)             Requested size: 175.04868pt x 113.81102pt.
+ [2 <./acc-plain-reg.png> <./loss-plain-reg.png> <./acc-plain-drop.png> <./loss
+-plain-drop.png>]
+<acc-linear-64-reg.png, id=101, 306.14375pt x 199.74625pt>
+File: acc-linear-64-reg.png Graphic file (type png)
+
+<use acc-linear-64-reg.png>
+Package pdftex.def Info: acc-linear-64-reg.png used on input line 152.
+(pdftex.def)             Requested size: 174.43367pt x 113.81102pt.
+
+<loss-linear-64-reg.png, id=102, 304.13625pt x 198.7425pt>
+File: loss-linear-64-reg.png Graphic file (type png)
+
+<use loss-linear-64-reg.png>
+Package pdftex.def Info: loss-linear-64-reg.png used on input line 153.
+(pdftex.def)             Requested size: 174.17159pt x 113.81102pt.
+
+<acc-linear-64-drop.png, id=103, 304.13625pt x 199.74625pt>
+File: acc-linear-64-drop.png Graphic file (type png)
+
+<use acc-linear-64-drop.png>
+Package pdftex.def Info: acc-linear-64-drop.png used on input line 171.
+(pdftex.def)             Requested size: 173.28984pt x 113.81102pt.
+
+<loss-linear-64-drop.png, id=104, 307.1475pt x 200.75pt>
+File: loss-linear-64-drop.png Graphic file (type png)
+
+<use loss-linear-64-drop.png>
+Package pdftex.def Info: loss-linear-64-drop.png used on input line 172.
+(pdftex.def)             Requested size: 174.13387pt x 113.81102pt.
+ [3 <./acc-linear-64.png> <./loss-linear-64.png> <./acc-linear-64-reg.png> <./l
+oss-linear-64-reg.png>]
+<visualization-linear-features_flatten.pdf, id=116, 499.65105pt x 382.86789pt>
 File: visualization-linear-features_flatten.pdf Graphic file (type pdf)
 
 <use visualization-linear-features_flatten.pdf>
 Package pdftex.def Info: visualization-linear-features_flatten.pdf used on inpu
-t line 101.
-(pdftex.def)             Requested size: 158.99156pt x 124.69931pt.
+t line 199.
+(pdftex.def)             Requested size: 185.66089pt x 142.26378pt.
 
-<visualization-linear-features_fc1.pdf, id=38, 491.98178pt x 382.86789pt>
+<visualization-linear-features_fc1.pdf, id=117, 499.65105pt x 382.86789pt>
 File: visualization-linear-features_fc1.pdf Graphic file (type pdf)
 
 <use visualization-linear-features_fc1.pdf>
 Package pdftex.def Info: visualization-linear-features_fc1.pdf used on input li
-ne 102.
-(pdftex.def)             Requested size: 194.76982pt x 151.5729pt.
+ne 200.
+(pdftex.def)             Requested size: 185.66089pt x 142.26378pt.
 
-<visualization-linear-features_fc2.pdf, id=39, 499.65105pt x 382.86789pt>
+<visualization-linear-features_fc2.pdf, id=118, 491.98178pt x 382.86789pt>
 File: visualization-linear-features_fc2.pdf Graphic file (type pdf)
 
 <use visualization-linear-features_fc2.pdf>
 Package pdftex.def Info: visualization-linear-features_fc2.pdf used on input li
-ne 103.
-(pdftex.def)             Requested size: 194.76982pt x 149.24776pt.
+ne 201.
+(pdftex.def)             Requested size: 182.81113pt x 142.26378pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[1
-
-
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./acc1.png> <./loss1.png> 
-<./acc2.png> <./loss2.png>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 141.
-
-Underfull \vbox (badness 2221) has occurred while \output is active []
-
- [2 <./acc3.png> <./loss3.png> <./acc4.png> <./loss4.png> <./visualization-line
-ar-features_flatten.pdf> <./visualization-linear-features_fc1.pdf
+[4 <./acc-linear-64-drop.png> <./loss-linear-64-drop.png>] [5 <./visualization-
+linear-features_flatten.pdf> <./visualization-linear-features_fc1.pdf
 
 pdfTeX warning: pdflatex (file ./visualization-linear-features_fc1.pdf): PDF in
 clusion: multiple pdfs with page group included in a single page
@@ -862,33 +891,97 @@ clusion: multiple pdfs with page group included in a single page
 
 pdfTeX warning: pdflatex (file ./visualization-linear-features_fc2.pdf): PDF in
 clusion: multiple pdfs with page group included in a single page
->] [3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 141.
+>] [6] <siamese.png, id=216, 847.165pt x 405.515pt>
+File: siamese.png Graphic file (type png)
+ <use siamese.png>
+Package pdftex.def Info: siamese.png used on input line 359.
+(pdftex.def)             Requested size: 290.21802pt x 138.91898pt.
+
+<siamese-1.png, id=217, 846.16125pt x 401.5pt>
+File: siamese-1.png Graphic file (type png)
+ <use siamese-1.png>
+Package pdftex.def Info: siamese-1.png used on input line 368.
+(pdftex.def)             Requested size: 290.21802pt x 137.70284pt.
+
+<siamese-2.png, id=218, 844.15375pt x 399.4925pt>
+File: siamese-2.png Graphic file (type png)
+ <use siamese-2.png>
+Package pdftex.def Info: siamese-2.png used on input line 377.
+(pdftex.def)             Requested size: 290.21802pt x 137.34349pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<visualization-siamese-plain.pdf, id=219, 499.65105pt x 382.86789pt>
+File: visualization-siamese-plain.pdf Graphic file (type pdf)
+
+<use visualization-siamese-plain.pdf>
+Package pdftex.def Info: visualization-siamese-plain.pdf used on input line 390
+.
+(pdftex.def)             Requested size: 176.407pt x 135.17418pt.
+
+<visualization-siamese-1.pdf, id=220, 499.65105pt x 382.86789pt>
+File: visualization-siamese-1.pdf Graphic file (type pdf)
+
+<use visualization-siamese-1.pdf>
+Package pdftex.def Info: visualization-siamese-1.pdf used on input line 391.
+(pdftex.def)             Requested size: 176.407pt x 135.17418pt.
+
+<visualization-siamese-3.pdf, id=221, 499.65105pt x 382.86789pt>
+File: visualization-siamese-3.pdf Graphic file (type pdf)
+
+<use visualization-siamese-3.pdf>
+Package pdftex.def Info: visualization-siamese-3.pdf used on input line 392.
+(pdftex.def)             Requested size: 204.85974pt x 156.97684pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 499.
+[7 <./siamese.png> <./siamese-1.png>] [8 <./siamese-2.png> <./visualization-sia
+mese-plain.pdf> <./visualization-siamese-1.pdf
+
+pdfTeX warning: pdflatex (file ./visualization-siamese-1.pdf): PDF inclusion: m
+ultiple pdfs with page group included in a single page
+> <./visualization-siamese-3.pdf
+
+pdfTeX warning: pdflatex (file ./visualization-siamese-3.pdf): PDF inclusion: m
+ultiple pdfs with page group included in a single page
+>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 499.
  (./report_methenitis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 141.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 141.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 499.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 499.
 Package rerunfilecheck Info: File `report_methenitis.out' has not changed.
-(rerunfilecheck)             Checksum: 959C917167A23E69252662FB5EBE1CD9;235.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 141.
+(rerunfilecheck)             Checksum: 0D782683DE6B396F4969C4D27E84FB02;879.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 499.
  ) 
 Here is how much of TeX's memory you used:
- 8241 strings out of 493013
- 123502 string characters out of 6139316
- 245192 words of memory out of 5000000
- 11625 multiletter control sequences out of 15000+600000
- 24660 words of font info for 53 fonts, out of 8000000 for 9000
+ 8424 strings out of 493013
+ 126635 string characters out of 6139316
+ 256865 words of memory out of 5000000
+ 11709 multiletter control sequences out of 15000+600000
+ 33104 words of font info for 98 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 31i,8n,38p,313b,329s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 31i,8n,38p,569b,475s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/share/texmf-dist/fon
 ts/enc/dvips/cm-super/cm-super-t1.enc}</usr/share/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr10.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/
-share/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-dist/fonts/
-type1/urw/times/utmr8a.pfb>
-Output written on report_methenitis.pdf (3 pages, 701870 bytes).
+/amsfonts/cm/cmbx10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr
+/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/
+public/cm-super/sftt0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super
+/sftt1000.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/sha
+re/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texmf-dist/fonts/typ
+e1/urw/times/utmri8a.pfb>
+Output written on report_methenitis.pdf (8 pages, 1577812 bytes).
 PDF statistics:
- 174 PDF objects out of 1000 (max. 8388607)
- 82 compressed objects within 1 object stream
- 14 named destinations out of 1000 (max. 500000)
- 14432 words of extra memory for PDF output out of 17280 (max. 10000000)
+ 364 PDF objects out of 1000 (max. 8388607)
+ 181 compressed objects within 2 object streams
+ 36 named destinations out of 1000 (max. 500000)
+ 21210 words of extra memory for PDF output out of 24883 (max. 10000000)
 

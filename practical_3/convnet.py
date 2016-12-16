@@ -23,6 +23,8 @@ class ConvNet(object):
                           output dimensions of the ConvNet.
         """
         self.n_classes = n_classes
+        self.isTrain = True
+        self.wd = 0.005
 
     def inference(self, x):
         """
@@ -57,8 +59,7 @@ class ConvNet(object):
             with tf.variable_scope('conv1') as scope:
                 w_conv1 = tf.get_variable('weights',
                                           shape=[5, 5, 3, 64],
-                                          initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001),
-                                          regularizer=regularizers.l2_regularizer(0.001))
+                                          initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
 
                 b_conv1 = tf.get_variable('biases', shape=[64], initializer=tf.constant_initializer(0.0))
 
@@ -69,8 +70,7 @@ class ConvNet(object):
             with tf.variable_scope('conv2') as scope:
                 w_conv2 = tf.get_variable('weights',
                                           shape=[5, 5, 64, 64],
-                                          initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001),
-                                          regularizer=regularizers.l2_regularizer(0.001))
+                                          initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
 
                 b_conv2 = tf.get_variable('biases', shape=[64], initializer=tf.constant_initializer(0.0))
 
@@ -87,30 +87,41 @@ class ConvNet(object):
             with tf.variable_scope('fc1') as scope:
                 w_fc1 = tf.get_variable('weights',
                                         shape=[flatten.get_shape()[1], 384],
-                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001),
-                                        regularizer=regularizers.l2_regularizer(0.001))
+                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+
+                # if self.wd is not None:
+                #     weight_decay = tf.mul(tf.nn.l2_loss(w_fc1), self.wd, name='weight_loss')
+                #     tf.add_to_collection('losses', weight_decay)
 
                 b_fc1 = tf.get_variable('biases', shape=[384], initializer=tf.constant_initializer(0.0))
 
                 h_fc1 = tf.nn.relu(tf.matmul(flatten, w_fc1) + b_fc1, name="h_f_fc1")
 
+                # h_fc1 = tf.cond(tf.cast(self.isTrain, tf.bool), lambda: tf.nn.dropout(h_fc1, 0.8), lambda: h_fc1)
+
             with tf.variable_scope('fc2') as scope:
                 w_fc2 = tf.get_variable('weights',
                                         shape=[384, 192],
-                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001),
-                                        regularizer=regularizers.l2_regularizer(0.001))
+                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
+
+                # if self.wd is not None:
+                #     weight_decay = tf.mul(tf.nn.l2_loss(w_fc2), self.wd, name='weight_loss')
+                #     tf.add_to_collection('losses', weight_decay)
 
                 b_fc2 = tf.get_variable('biases', shape=[192], initializer=tf.constant_initializer(0.0))
 
                 h_fc2 = tf.nn.relu(tf.matmul(h_fc1, w_fc2) + b_fc2, name="h_f_fc2")
 
+                # h_fc2 = tf.cond(tf.cast(self.isTrain, tf.bool), lambda : tf.nn.dropout(h_fc2, 0.), lambda : h_fc2)
+
             with tf.variable_scope('fc3') as scope:
                 w_fc3 = tf.get_variable('weights',
                                         shape=[192, 10],
-                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001),
-                                        regularizer=regularizers.l2_regularizer(0.001))
+                                        initializer=tf.random_normal_initializer(mean=0.0, stddev=0.001))
 
                 b_fc3 = tf.get_variable('biases', shape=[10], initializer=tf.constant_initializer(0.0))
+
+
 
             logits = tf.matmul(h_fc2, w_fc3) + b_fc3
 
@@ -169,15 +180,14 @@ class ConvNet(object):
           loss: scalar float Tensor, full loss = cross_entropy + reg_loss
         """
         ########################
-        # PUT YOUR CODE HERE   #
+        # PUT YOUR CODE HERE  #
         ########################
         labels = tf.cast(labels, tf.float32)
         cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits, labels, name='cross_entropy')
         loss = tf.reduce_mean(cross_entropy, name='cross_entropy_mean')
 
-        # reg_loss = tf.reduce_sum(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
-        # loss += reg_loss
+        tf.add_to_collection('losses', loss)
         ########################
-        # END OF YOUR CODE     #
+        # END OF YOUR CODE    #
         ########################
-        return loss
+        return tf.add_n(tf.get_collection('losses'), name='total_loss')

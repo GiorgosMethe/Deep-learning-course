@@ -133,12 +133,20 @@ class Siamese(object):
         ########################
         # PUT YOUR CODE HERE  #
         ########################
-        l2_dist = tf.sqrt(tf.reduce_sum(tf.square(channel_1 - channel_2)))
-        contrast = tf.maximum(0.0, margin - l2_dist)
-        loss = tf.reduce_sum(label * l2_dist + (1.0 - label) * contrast)
+        # l2_dist = tf.sqrt(tf.reduce_sum(tf.square(channel_1 - channel_2)))
+        # contrast = tf.maximum(0.0, margin - l2_dist)
+        # loss = tf.reduce_sum(label * 0.5 * l2_dist + (1.0 - label) * contrast)
 
-        # reg_loss = tf.reduce_sum(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
-        # loss += reg_loss
+        d = tf.reduce_sum(tf.square(tf.sub(channel_1, channel_2)), reduction_indices=1)
+        d = tf.sqrt(d + 1e-7)
+        loss = tf.reduce_mean(label * d + (1 - label) * tf.maximum(margin - d, 0.0))
+
+        # plain. loss = tf.reduce_mean(label * 0.5 * d + (1 - label) * tf.maximum(margin - d, 0.0)) / old sampling
+        # 1. loss = tf.reduce_mean(label * d + (1 - label) * tf.maximum(margin - d, 0.0)) / old sampling
+        # 3. loss = tf.reduce_mean(label * d + (1 - label) * tf.maximum(margin - d, 0.0)) / new sampling
+
+        # reg_losses = tf.reduce_sum(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+        # loss += 0.01 * reg_losses
         ########################
         # END OF YOUR CODE    #
         ########################
