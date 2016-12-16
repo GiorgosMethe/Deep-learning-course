@@ -19,9 +19,9 @@ EVAL_FREQ_DEFAULT = 1000
 CHECKPOINT_FREQ_DEFAULT = 5000
 PRINT_FREQ_DEFAULT = 10
 OPTIMIZER_DEFAULT = 'ADAM'
-REFINE_AFTER_K_STEPS_DEFAULT = 0
+REFINE_AFTER_K_STEPS_DEFAULT = 100
 
-EXPERIMENT = '/' + 'vgg16-retraining'
+EXPERIMENT = '/' + 'vgg16-refine-100'
 DATA_DIR_DEFAULT = './cifar10/cifar-10-batches-py'
 LOG_DIR_DEFAULT = './logs/cifar10' + EXPERIMENT
 CHECKPOINT_DIR_DEFAULT = './checkpoints' + EXPERIMENT
@@ -90,6 +90,10 @@ def train():
     pool5, assign_ops = vgg.load_pretrained_VGG16_pool5(x)
     pool5 = tf.cond(refine, lambda : pool5, lambda : tf.stop_gradient(pool5))
 
+
+    #############
+    ## Extra layers
+    #############
     with tf.variable_scope('flatten') as scope:
         flatten = tf.reshape(pool5, shape=[-1, 512], name="h_f_flatten")
 
@@ -117,6 +121,10 @@ def train():
 
         b_fc3 = tf.get_variable('biases', shape=[10], initializer=tf.constant_initializer(0.0))
 
+    #############
+    ## Extra layers
+    #############
+
     x_ = tf.matmul(h_fc2, w_fc3) + b_fc3
 
     with tf.name_scope('loss'):
@@ -132,6 +140,7 @@ def train():
     session = tf.Session()
     session.run(init)
 
+    # Assign ops for weight restoration
     session.run(assign_ops)
 
     tf.scalar_summary('accuracy', accuracy)
@@ -152,12 +161,10 @@ def train():
 
         train_writer.add_summary(summary, iteration)
 
-        print(iteration, acc, l)
-
         if iteration % CHECKPOINT_FREQ_DEFAULT == 0:
             saver.save(session, CHECKPOINT_DIR_DEFAULT + "/linear-model-at-" + str(iteration) + ".ckpt")
 
-        if iteration % EVAL_FREQ_DEFAULT == 0.0:
+        if iteration % EVAL_FREQ_DEFAULT == 0.0 or iteration == 1:
             _split = 250
             avg_loss, avg_acc = 0.0, 0.0
             model.isTrain = False

@@ -216,11 +216,11 @@ classif = OneVsRestClassifier(SVC(kernel='linear'))
 classif.fit(features[train_set], batch_y[train_set]
 classif.score(features[test_set], batch_y[test_set]
 \end{verbatim}
-Here, the reported accuracy of the one-vs-classifiers on the test set:
+Here, the reported accuracy\footnote{The accuracy is reported to half of the test set ($5000$ random samples without replacement due to slow training of the OneVsRestClassifier		)} of the one-vs-classifiers on the test set:
 \begin{itemize}
-\item Accuracy with flatten features: $0.6306$.
-\item Accuracy with fc1 features: $0.$.
-\item Accuracy with fc2 features: $0.$.
+\item Accuracy with flatten features: $0.59$.
+\item Accuracy with fc1 features: $0.59$.
+\item Accuracy with fc2 features: $0.703$.
 \end{itemize}
 It is natural that the accuracy is higher for later layers.
 As it was earlier $fc2$ layer can distinguish better features of different classes.
@@ -230,7 +230,7 @@ As it was earlier $fc2$ layer can distinguish better features of different class
 
 \section{Task 2}
 
-In this section I present my implementation and the results achieved by the siamese architecture of the CNN.
+In this section I present my implementation and the results achieved by the siamese architecture of the CNN.		
 First, I implemented the functions \texttt{create\_dataset} and \texttt{next\_batch} in the \texttt{cifar10\_siamese\_utils.py}.
 
 
@@ -340,6 +340,8 @@ The resulted batch
 |      .            .          | -->   | 0 |
 | image_cl2_327, image_cl6_234 | -->   | 0 |
 \end{verbatim}
+Is is expected that classes are uniformly picked in expectation given the random sampling. Given the default way of selecting training batches training among classes is not guarranteed to be uniform.
+Later we see that the alternative way of creating batches achieves the highest accuracy in the end of training using the one-vs-rest classifier.
 \end{itemize}
 
 
@@ -406,12 +408,43 @@ Here, I present the accuracy of the one-vs-rest classifier on the features learn
 \section{Transfer Learning}
  
  
- \begin{figure}[h!]
+\begin{figure}[h!]
 \centering
 \includegraphics[width=5.2cm]{graph.png}
 \caption{Graph for the task 3 of the assignment, the final three layers of convnet were used. Note the stop gradient operation, where we don't want to update the pre-trained weights.}
-\label{fig:features}
+\label{fig:graph}
 \end{figure}
+
+
+
+\subsection{Feature Extraction}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=12.2cm]{acc-transfer.png}\	
+\includegraphics[width=12.2cm]{loss-transfer.png}
+\caption{}
+\label{fig:extra}
+\end{figure}
+
+
+
+
+\subsection{Retraining}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=12.2cm]{acc-retrain.png}\	
+\includegraphics[width=12.2cm]{loss-retrain.png}
+\caption{}
+\label{fig:retrain}
+\end{figure}
+
+
+\subsubsection{Refining}
+
+
+
  
 %
 %Using the same TSNE algorithm we present the $2$-dimensional representation of the feat
