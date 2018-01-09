@@ -3,8 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-from tensorflow.contrib.layers import initializers
-from tensorflow.contrib.layers import regularizers
+# from tensorflow.contrib.layers import initializers
+# from tensorflow.contrib.layers import regularizers
 
 class ConvNet(object):
     """
@@ -112,7 +112,7 @@ class ConvNet(object):
 
                 h_fc2 = tf.nn.relu(tf.matmul(h_fc1, w_fc2) + b_fc2, name="h_f_fc2")
 
-                h_fc2 = tf.cond(tf.cast(self.isTrain, tf.bool), lambda : tf.nn.dropout(h_fc2, 0.), lambda : h_fc2)
+                h_fc2 = tf.cond(tf.cast(self.isTrain, tf.bool), lambda : tf.nn.dropout(h_fc2, 0.1), lambda : h_fc2)
 
             with tf.variable_scope('fc3') as scope:
                 w_fc3 = tf.get_variable('weights',
@@ -182,7 +182,7 @@ class ConvNet(object):
         # PUT YOUR CODE HERE  #
         ########################
         labels = tf.cast(labels, tf.float32)
-        cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits, labels, name='cross_entropy')
+        cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits= logits, labels = labels, name='cross_entropy')
         loss = tf.reduce_mean(cross_entropy, name='cross_entropy_mean')
 
         tf.add_to_collection('losses', loss)

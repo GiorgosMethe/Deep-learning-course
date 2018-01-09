@@ -113,18 +113,18 @@ def train():
     with tf.name_scope('train'):
         train_step = tf.train.AdamOptimizer(LEARNING_RATE_DEFAULT).minimize(loss)
 
-    init = tf.initialize_all_variables()
+    init = tf.global_variables_initializer()
     session = tf.Session()
     session.run(init)
 
-    tf.scalar_summary('accuracy', accuracy)
-    tf.scalar_summary('loss', loss)
-    merged = tf.merge_all_summaries()
+    tf.summary.scalar('accuracy', accuracy)
+    tf.summary.scalar('loss', loss)
+    merged = tf.summary.merge_all()
 
-    train_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/linear-train', session.graph)
-    test_writer = tf.train.SummaryWriter(LOG_DIR_DEFAULT + '/linear-test', session.graph)
+    train_writer = tf.summary.FileWriter(LOG_DIR_DEFAULT + '/linear-train', session.graph)
+    test_writer = tf.summary.FileWriter(LOG_DIR_DEFAULT + '/linear-test', session.graph)
 
-    saver = tf.train.Saver(tf.all_variables())
+    saver = tf.train.Saver(tf.global_variables())
 
     for iteration in range(1, MAX_STEPS_DEFAULT+1):
         model.isTrain = True
